@@ -1,4 +1,5 @@
-$(document).ready(function() {$('.project-name').click(function() {
+$(document).ready(function() {
+  $('.project-name').click(function() {
     if ($(this).css('left') == 'auto') {
       var distDown = $(this).css('height').replace(/[^-\d\.]/g, '') * 3;
       $(this).css('left', $(this).css('width'));

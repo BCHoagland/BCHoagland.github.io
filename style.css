@@ -9,7 +9,12 @@ body {
 
 .header {
   padding-bottom: 2rem;
-  border-bottom: 1px solid #bbb;
+  /* border-bottom: 1px solid #bbb; */
+}
+
+.header h1 a {
+  text-decoration: none;
+  color: inherit;
 }
 
 .header h3 {
@@ -47,6 +52,40 @@ body {
   margin-bottom: 5em;
 }
 
+.panel-jumbo {
+  width: 100%;
+  border-radius: 5px;
+  background-color: #fa8072;
+  background-image: url("svg/topo.svg");
+  color: white;
+  font-size: 6em;
+  font-weight: 600;
+  text-align: center;
+  padding: 1em;
+  margin-bottom: 1em;
+}
+
+.inner-panel {
+  text-align: left;
+  font-size: 0.3em;
+  font-weight: 300;
+  color: #333;
+  background-color: white;
+  width: 80%;
+  margin: auto;
+  margin-bottom: 3em;
+  border-radius: 5px;
+  padding: 20px;
+}
+
+.jumbo-title {
+  /* position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%); */
+  margin-bottom: 1.4em;
+}
+
 .project-name {
   padding: 10px 20px 10px 20px;
   display: inline-block;
@@ -60,7 +99,10 @@ body {
 }
 
 .project-name:hover {
-  cursor: pointer;
+  cursor:pointer;
+}
+
+.panel-jumbo:hover, .project-name:hover {
   background-color: #057f8d;
   background-image: url("svg/topo-inverted.svg");
 }
