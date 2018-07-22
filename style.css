@@ -1,0 +1,43 @@
+:root {
+
+}
+
+body {
+  font-family: 'Montserrat', sans-serif;
+}
+
+.header h3 {
+  font-weight: 300;
+}
+
+.project-panel {
+  margin-bottom: 5em;
+}
+
+.project-name {
+  padding: 10px 20px 10px 20px;
+  margin-bottom: 10px;
+  display: inline-block;
+  border-radius: 5px;
+  color: white;
+  background-color: #fa8072;
+  background-image: url("svg/topo.svg");
+  font-size: 2em;
+  font-weight: 600;
+}
+
+.project-name:hover {
+  cursor: pointer;
+  background-color: #057f8d;
+  background-image: url("svg/topo-inverted.svg");
+}
+
+.project-name:active {
+  background-color: #000;
+  background-image: url("svg/topo-inverted.svg");
+}
+
+.project-desc {
+  font-size: 1.5em;
+  font-weight: 300;
+}
