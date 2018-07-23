@@ -31,10 +31,27 @@ body {
   box-shadow: -1px -1px 1px #eee;
 }
 
-.footer div {
+.footer a {
+  color: #333;
+  font-size: 2.6em;
+  text-decoration: none;
+  margin-left: 0.6em;
+  margin-right: 0.6em;
+  transition: color 0.2s;
+}
+
+.footer a:hover {
+  color: #777;
+}
+
+.footer a:active {
+  color: #aaa;
+}
+
+/* .footer div {
   display: inline;
   margin: 20px;
-}
+} */
 
 .section-title {
   font-size: 3rem;
@@ -63,6 +80,7 @@ body {
   text-align: center;
   padding: 1em;
   margin-bottom: 1em;
+  transition: background-image 0.4s, background-color 0.4s;
 }
 
 .inner-panel {
