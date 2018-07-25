@@ -113,7 +113,7 @@ body {
   background-image: url("svg/topo.svg");
   font-size: 2em;
   font-weight: 600;
-  transition: background-image 0.4s, background-color 0.4s;
+  transition: background-image 0.6s, background-color 0.4s;
 }
 
 .project-name:hover {
