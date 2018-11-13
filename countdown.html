@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <!-- <title>I love you, Joules :)</title> -->
+</head>
+<body>
+
+  <div id="time"></div>
+
+  <script type="text/javascript">
+var seconds = 1000;
+var minutes = seconds * 60;
+var hours = minutes * 60;
+var days = hours * 24;
+
+var d2 = new Date("November 16 2018 13:19");
+
+function setDate() {
+  var d1 = new Date();
+
+  var n = d2.getTime() - d1.getTime();
+
+  var d = Math.floor(n / days);
+  n = n % days;
+  var h = Math.floor(n / hours);
+  n = n % hours;
+  var m = Math.floor(n / minutes);
+  n = n % minutes;
+  var s = Math.floor(n / seconds);
+
+  var days_until = 'days: ' + d + '<br/>';
+  var hours_until = 'hours: ' + h + '<br/>';
+  var mins_until = 'minutes: ' + m + '<br/>';
+  var secs_until = 'seconds: ' + s;
+
+  document.getElementById('time').innerHTML = days_until + hours_until + mins_until + secs_until;
+}
+
+setDate();
+setInterval(setDate, 1000);
+  </script>
+</body>
+</html>
