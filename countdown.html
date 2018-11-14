@@ -7,9 +7,10 @@
 body {
   font: 3em Montserrat;
   font-weight: 600;
+  color: black;
 }
 
-.times {
+.container {
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -20,24 +21,67 @@ body {
   width: 100vw;
   height: 100vh;
 }
+
+#bar {
+  position: fixed;
+  left: 0;
+  top: 0;
+  border-bottom: 5px solid red;
+}
+
+#status {
+  margin-bottom: 2em;
+  text-align: center;
+}
+
+.times {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+
 .times div div {
   margin: 20px;
-  /* display: block; */
 }
-#times-container {
-  margin-top: -20px;
+
+#home {
+  color: rgb(185, 151, 91);
+}
+#swamp {
+  color: rgb(17, 87, 64);
 }
   </style>
 </head>
 <body>
 
-  <div class="times">
-    <div id="times-container">
-      <div id="days"></div>
-      <div id="hours"></div>
-      <div id="mins"></div>
-      <div id="secs"></div>
+  <div id="bar"></div>
+
+  <div class="container">
+
+    <div id="status"></div>
+
+    <div class="times">
+      <div id="train">
+        <div id="days1"></div>
+        <div id="hours1"></div>
+        <div id="mins1"></div>
+        <div id="secs1"></div>
+      </div>
+      <div id="home">
+        <div id="days2">oh no</div>
+        <div id="hours2"></div>
+        <div id="mins2"></div>
+        <div id="secs2"></div>
+      </div>
+      <div id="swamp">
+        <div id="days3">again</div>
+        <div id="hours3"></div>
+        <div id="mins3"></div>
+        <div id="secs3"></div>
+      </div>
     </div>
+
   </div>
 
   <script type="text/javascript">
@@ -46,12 +90,18 @@ var minutes = seconds * 60;
 var hours = minutes * 60;
 var days = hours * 24;
 
-var d2 = new Date("November 16 2018 15:19");
+var d0 = new Date("November 12 2018 15:19").getTime();
+var d2 = new Date("November 16 2018 15:19").getTime();
+var d3 = new Date("November 16 2018 17:59").getTime();
+var d4 = new Date("November 16 2018 20:30").getTime();
 
-function setDate() {
-  var d1 = new Date();
+function setNum(num, val, label) {
+  if (val == 0) document.getElementById(label + num).innerHTML = '';
+  else document.getElementById(label + num).innerHTML = val + ' ' + label;
+}
 
-  var n = d2.getTime() - d1.getTime();
+function setTime(num, d1, d2) {
+  var n = d2 - d1;
 
   var d = Math.floor(n / days);
   n = n % days;
@@ -61,19 +111,56 @@ function setDate() {
   n = n % minutes;
   var s = Math.floor(n / seconds);
 
-  var days_until = d + ' days';
-  var hours_until = h + ' hours';
-  var mins_until = m + ' minutes';
-  var secs_until = s + ' seconds';
-
-  document.getElementById('days').innerHTML = days_until;
-  document.getElementById('hours').innerHTML = hours_until;
-  document.getElementById('mins').innerHTML = mins_until;
-  document.getElementById('secs').innerHTML = secs_until;
+  setNum(num, d, 'days');
+  setNum(num, h, 'hours');
+  setNum(num, m, 'mins');
+  setNum(num, s, 'secs');
 }
 
-setDate();
-setInterval(setDate, 1000);
+function setStatus(str) {
+  document.getElementById('status').innerHTML = 'Braden\'s Status: ' + str;
+}
+
+function setBar(d0, d1, d2, color) {
+  var completed = d1 - d0;
+  var remaining = d2 - d1;
+  var percentCompleted = 100 * completed / (completed + remaining);
+  document.getElementById('bar').style.borderColor = color;
+  document.getElementById('bar').style.width = percentCompleted + 'vw';
+}
+
+function setTimers() {
+  var d1 = new Date().getTime();
+
+  if (d1 < d2) {
+    setTime(1, d1, d2);
+    setTime(2, d2, d3);
+    setTime(3, d3, d4);
+    setStatus('In Frat Boy Hell');
+    setBar(d0, d1, d2, 'black');
+  } else if (d1 < d3) {
+    setTime(1, d1, d1);
+    setTime(2, d1, d3);
+    setTime(3, d3, d4);
+    setStatus('Heading the Wrong Direction?');
+    setBar(d2, d1, d3, 'rgb(185, 151, 91)');
+  } else if (d1 < d4) {
+    setTime(1, d1, d1);
+    setTime(2, d1, d1);
+    setTime(3, d1, d4);
+    setStatus('AHHH I\'m on the way!!!!');
+    setBar(d3, d1, d4, 'rgb(17, 87, 64)');
+  } else {
+    setTime(1, d1, d1);
+    setTime(2, d1, d1);
+    setTime(3, d1, d1);
+    setStatus('I\'M HERE JOULES!!!! <3');
+    setBar(d0, d0, d2, 'transparent');
+  }
+}
+
+setTimers();
+setInterval(setTimers, 1000);
   </script>
 </body>
 </html>
