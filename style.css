@@ -1,151 +1,112 @@
 :root {
-
+  --bg-color: #fffaf1;
+  --comp-color: #003660;
 }
 
 body {
-  font-family: 'Montserrat', sans-serif;
-  /* background-image: url("svg/topo-faded.svg"); */
-}
-
-.header {
-  padding-bottom: 2rem;
-  /* border-bottom: 1px solid #bbb; */
-}
-
-.header h1 a {
-  text-decoration: none;
-  color: inherit;
-}
-
-.header h3 {
+  background-color: var(--bg-color);
+  /* font: 2em Montserrat; */
+  font: 2em Consolas, monaco, monospace;
   font-weight: 300;
-}
-
-.footer {
-  position: fixed;
-  width: 100%;
-  bottom: 0;
-  text-align: center;
-  padding: 20px;
-  background-color: white;
-  box-shadow: -1px -1px 1px #eee;
-}
-
-.footer a {
-  color: #333;
-  font-size: 2.6em;
-  text-decoration: none;
-  margin-left: 0.6em;
-  margin-right: 0.6em;
-  transition: color 0.2s;
-}
-
-.footer a:hover {
-  color: #777;
-}
-
-.footer a:active {
-  color: #aaa;
-}
-
-/* .footer div {
-  display: inline;
-  margin: 20px;
-} */
-
-.section-title {
-  font-size: 3rem;
-  font-weight: 600;
-  margin-bottom: 3rem;
-}
-
-.bio {
-  font-size: 1.5em;
-  font-weight: 300;
+  color: var(--comp-color);
   margin-bottom: 4em;
 }
 
-.project-panel {
-  margin-bottom: 5em;
+/*####################
+V
+####################*/
+#V {
+  position: fixed;
+  z-index: -1;
+  top: -25%;
+  right: -15%;
+  font: 60em 'Times New Roman';
+  font-weight: 800;
+  color: #ff8c42;
 }
 
-.panel-jumbo {
-  width: 100%;
-  border-radius: 5px;
-  background-color: #fa8072;
-  background-image: url("svg/topo.svg");
-  color: white;
-  font-size: 6em;
-  font-weight: 600;
-  text-align: center;
-  padding: 1em;
-  margin-bottom: 1em;
-  transition: background-image 0.6s, background-color 0.4s;
+/*####################
+PANES
+####################*/
+.pane {
+  width: 100vw;
+  height: 100vh;
+  background-color: var(--bg-color);
+  color: var(--comp-color);
+  position: sticky;
+  top: 0;
 }
 
-.inner-panel {
-  text-align: left;
-  font-size: 0.3em;
-  font-weight: 300;
-  color: #333;
-  background-color: white;
-  width: 80%;
-  margin: auto;
-  margin-bottom: 3em;
-  border-radius: 5px;
-  padding: 20px;
+#rl-pane, #about-pane {
+  background-color: var(--comp-color);
+  color: var(--bg-color);
 }
 
-.jumbo-title {
-  /* position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%); */
-  margin-bottom: 1.4em;
-}
-
-.project-name {
-  padding: 10px 20px 10px 20px;
-  display: inline-block;
-  border-radius: 5px;
-  color: white;
-  background-color: #fa8072;
-  background-image: url("svg/topo.svg");
+/*####################
+HEADERS
+####################*/
+.header {
   font-size: 2em;
-  font-weight: 600;
-  transition: background-image 0.6s, background-color 0.4s;
+  padding: 1em;
+  margin-bottom: 2em;
 }
 
-.project-name:hover {
-  cursor:pointer;
+.header div:first-child {
+  font-size: 2em;
+  font-weight: 800;
+  margin-bottom: 0.1em;
 }
 
-.panel-jumbo:hover, .project-name:hover {
-  background-color: #057f8d;
-  background-image: url("svg/topo-inverted.svg");
+.subheader {
+  font-size: 2em;
+  font-weight: 800;
+  padding: 1em;
 }
 
-.project-name:active {
-  background-color: #000;
-  background-image: url("svg/topo-inverted.svg");
+/*####################
+PROJECTS
+####################*/
+a {
+  color: var(--comp-color);
 }
 
-.project-desc {
-  font-size: 1.5em;
-  font-weight: 300;
-  padding: 20px;
-  border: 1px solid gray;
-  border-top: none;
-  border-radius: 0 0 5px 5px;
-  background-color: white;
-  display: none;
+a:hover {
+  color: var(--bg-color);
+  text-decoration: none;
 }
 
-.project-desc a {
-  font-weight: 600;
+.project {
+  opacity: 0.9;
+  display: inline-block;
+  padding: 1em 3em 1em 3em;
+  border-left: 4px solid var(--comp-color);
+  margin-bottom: 1em;
+  background-image: linear-gradient(
+    to left,
+    transparent,
+    transparent 50%,
+    var(--comp-color) 50%,
+    var(--comp-color)
+  );
+  background-position: 100% 0;
+  background-size: 200% 100%;
+  transition: all 0.6s ease;
 }
 
-.project-go {
-  float:right;
-  display: none;
+.project:hover {
+  background-position: 0 0;
+  color: var(--bg-color);
+}
+
+.project div:first-child {
+  font-size: 1.2em;
+  font-weight: 800;
+  margin-bottom: 1em;
+}
+
+/*####################
+DESCRIPTIONS
+####################*/
+.description {
+  padding: 1em 3em 1em 3em;
 }
