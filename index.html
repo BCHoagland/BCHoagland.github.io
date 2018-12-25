@@ -10,60 +10,70 @@
 </head>
 <body>
 
-  <div id="V">V</div>
-  <div class="header">
-    <div>Braden Hoagland</div>
-    <div>UVa Computer Science '22</div>
+  <div id="nav">
+    <div id="home-btn" name="home">Braden Hoagland</div>
+    <div class="section-btn" id="proj-btn" name="proj">Misc. Projects</div>
+    <div class="section-btn" id="rl-btn" name="rl">RL Projects</div>
+    <div class="section-btn" id="about-btn" name="about">About Me</div>
   </div>
 
-  <div class="subheader">
-    <div>Reinforcement Learning Projects</div>
+  <div class="pane" id="rl">
+    <div class="header">Reinforcement Learning Projects</div>
+
+    <a href="https://github.com/BCHoagland/RL-Utils">
+      <div class="project">
+        <div>PyTorch RL Utils</div>
+        <div>A collection of reinforcement learning utilities created with PyTorch for use with OpenAI Gym environments</div>
+      </div>
+    </a>
+
+    <a href="https://github.com/BCHoagland/Policy-Optimization">
+      <div class="project">
+        <div>Policy Optimization</div>
+        <div>Simple implementations of common policy optimization algorithms</div>
+      </div>
+    </a>
   </div>
 
-  <a href="https://github.com/BCHoagland/RL-Utils">
-    <div class="project">
-      <div>PyTorch RL Utils</div>
-      <div>A collection of reinforcement learning utilities created with PyTorch for use with OpenAI Gym environments</div>
-    </div>
-  </a>
+  <div class="pane" id="proj">
+    <div class="header">Miscellaneous Projects</div>
 
-  <a href="https://github.com/BCHoagland/Policy-Optimization">
-    <div class="project">
-      <div>Policy Optimization</div>
-      <div>Simple implementations of common policy optimization algorithms</div>
-    </div>
-  </a>
+    <a href="http://bradenhoagland.me/MUN-Timer/">
+      <div class="project">
+        <div>MUN Timer</div>
+        <div>JavaScript timer made for chairing MUN committees</div>
+      </div>
+    </a>
 
-  <div class="subheader">
-    <div>Side Projects</div>
+    <a href="http://bradenhoagland.me/uva-scheduler/">
+      <div class="project">
+        <div>UVA Scheduler</div>
+        <div>Scheduling app for automatically finding compatible schedules given your classes</div>
+      </div>
+    </a>
+
+    <a href="https://github.com/BCHoagland/Iris">
+      <div class="project">
+        <div>Iris</div>
+        <div>MacOS Personal Assistant, made to manage quick communication</div>
+      </div>
+    </a>
   </div>
 
-  <a href="http://bradenhoagland.me/MUN-Timer/">
-    <div class="project">
-      <div>MUN Timer</div>
-      <div>JavaScript timer made for chairing MUN committees</div>
-    </div>
-  </a>
+  <div class="pane" id="about">
+    <div class="header">About Me</div>
 
-  <a href="http://bradenhoagland.me/uva-scheduler/">
-    <div class="project">
-      <div>UVA Scheduler</div>
-      <div>Scheduling app for automatically finding compatible schedules given your classes</div>
-    </div>
-  </a>
+    <div>I'm a first year Computer Science student at the University of Virginia, currently taking part in reinforcement learning research with CavML on more efficient methods of generalization in transfer learning. I work part time as a machine learning engineer at Decipher Technology Studios.</div>
 
-  <a href="https://github.com/BCHoagland/Iris">
-    <div class="project">
-      <div>Iris</div>
-      <div>MacOS Personal Assistant, made to manage quick communication</div>
-    </div>
-  </a>
+    <div class="header">Contact Me</div>
 
-  <div class="subheader">
-    <div>About Me</div>
+    <span>Email: &nbsp;&nbsp;&nbsp;&nbsp; <a href="mailto:bch4ht@virginia.edu">bch4ht@virginia.edu</a></span>
+    <span>GitHub: &nbsp;&nbsp;&nbsp; <a href="https://github.com/bchoagland">BCHoagland</a></span>
+    <span>Facebook: &nbsp; <a href="">oops</a></span>
+    <span>Instagram: &nbsp;<a href="https://instagram.com/bradenhoagland">bradenhoagland</a></span>
   </div>
 
-  <div class="description">I'm a first year Computer Science student at the University of Virginia, currently taking part in reinforcement learning research with CavML on more efficient methods of generalization in transfer learning. I work part time as a machine learning engineer at Decipher Technology Studios.</div>
+  <script type="text/javascript" src="script.js"></script>
 
 </body>
 </html>

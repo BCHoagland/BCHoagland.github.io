@@ -1,112 +1,97 @@
 :root {
-  --bg-color: #fffaf1;
-  --comp-color: #003660;
+  --comp: #888;
+  --comp-dark: black;
+  --line: #bbb;
 }
 
 body {
-  background-color: var(--bg-color);
-  /* font: 2em Montserrat; */
-  font: 2em Consolas, monaco, monospace;
-  font-weight: 300;
-  color: var(--comp-color);
-  margin-bottom: 4em;
+  background-color: white;
+  color: black;
+  font-family: Consolas, monaco, monospace;
 }
 
-/*####################
-V
-####################*/
-#V {
-  position: fixed;
-  z-index: -1;
-  top: -25%;
-  right: -15%;
-  font: 60em 'Times New Roman';
-  font-weight: 800;
-  color: #ff8c42;
-}
-
-/*####################
-PANES
-####################*/
-.pane {
-  width: 100vw;
-  height: 100vh;
-  background-color: var(--bg-color);
-  color: var(--comp-color);
-  position: sticky;
-  top: 0;
-}
-
-#rl-pane, #about-pane {
-  background-color: var(--comp-color);
-  color: var(--bg-color);
-}
-
-/*####################
-HEADERS
-####################*/
-.header {
-  font-size: 2em;
-  padding: 1em;
-  margin-bottom: 2em;
-}
-
-.header div:first-child {
-  font-size: 2em;
-  font-weight: 800;
-  margin-bottom: 0.1em;
-}
-
-.subheader {
-  font-size: 2em;
-  font-weight: 800;
+.fa {
+  font-size: 3em;
   padding: 1em;
 }
 
-/*####################
-PROJECTS
-####################*/
 a {
-  color: var(--comp-color);
+  text-decoration: none;
+  color: var(--comp);
+  transition: all 0.1s;
 }
 
 a:hover {
-  color: var(--bg-color);
+  text-decoration: none;
+  color: var(--comp-dark);
+}
+
+a:active {
   text-decoration: none;
 }
 
-.project {
-  opacity: 0.9;
-  display: inline-block;
-  padding: 1em 3em 1em 3em;
-  border-left: 4px solid var(--comp-color);
-  margin-bottom: 1em;
-  background-image: linear-gradient(
-    to left,
-    transparent,
-    transparent 50%,
-    var(--comp-color) 50%,
-    var(--comp-color)
-  );
-  background-position: 100% 0;
-  background-size: 200% 100%;
-  transition: all 0.6s ease;
-}
-
-.project:hover {
-  background-position: 0 0;
-  color: var(--bg-color);
-}
-
 .project div:first-child {
-  font-size: 1.2em;
-  font-weight: 800;
-  margin-bottom: 1em;
+  color: black;
+  font-weight: bold;
+  margin-bottom: 0.4em;
 }
 
-/*####################
-DESCRIPTIONS
-####################*/
-.description {
-  padding: 1em 3em 1em 3em;
+/*##########
+NAV
+##########*/
+
+#nav {
+  padding: 2em;
+}
+
+#nav div:hover {
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+#nav div {
+  float: right;
+  padding: 0.6em 2em 0.6em 2em;
+  border: 2px solid transparent;
+  border-radius: 2em;
+  margin: 0 1em 0 1em;
+  background-color: transparent;
+}
+
+#nav div:first-child {
+  float: left;
+  font-size: 1.4em;
+  padding-left: 1.4em;
+  border: none;
+  margin: 0;
+}
+
+/*##########
+PANES
+##########*/
+
+.pane {
+  margin-top: 3em;
+  padding: 1em 2em 2em 2em;
+  display: none;
+  border-top: 1px solid var(--line);
+}
+
+.pane > div {
+  padding: 2em;
+}
+
+.pane .header {
+  padding: 1em;
+  font-size: 2em;
+}
+
+.pane .project {
+  padding: 2em;
+  display: inline-block;
+}
+
+span {
+  padding: 1em 2em 1em 2em;
+  display: block;
 }
