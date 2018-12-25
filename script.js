@@ -18,7 +18,9 @@ $(document).ready(function() {
 
   $('#nav div').click(function() {
     var name = $(this).attr('name');
-    showPane(name);
+    if (name != 'home') {
+      showPane(name);
+    }
   });
 
   $('.section-btn').hover(function() {
