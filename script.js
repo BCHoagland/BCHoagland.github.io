@@ -7,7 +7,7 @@ function showPane(name) {
       $('#' + names[i] + '-btn').css({'border-color': 'transparent', 'background-color': 'transparent', 'color': 'black'});
     } else {
       $('#' + name).css('display', 'inherit');
-      $('#' + names[i] + '-btn').css({'border-color': 'black', 'background-color': 'black', 'color': 'white'});
+      $('#' + names[i] + '-btn').css({'border-color': 'black', 'background-color': '#f8f8f8', 'color': 'black'});
     }
   }
 }
@@ -23,12 +23,12 @@ $(document).ready(function() {
     }
   });
 
-  $('.section-btn').hover(function() {
+  $('.section-btn').mouseenter(function() {
     $(this).css('border-color', 'black');
   });
 
   $('.section-btn').mouseleave(function() {
-    if ($(this).css('background-color') != 'rgb(0, 0, 0)') {
+    if ($(this).css('background-color') != 'rgb(248, 248, 248)') {
       $(this).css('border-color', 'transparent');
     }
   });
