@@ -1,46 +1,82 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-  <link href="https://fonts.googleapis.com/css?family=Lora:400,700" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
-  <title>Braden Hoagland</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link href="https://fonts.googleapis.com/css?family=Lora:400,700" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <title>Braden Hoagland</title>
 </head>
 <body>
-  <div class="block" id="main">
-    <br><br><br><br><br><br>
-    <div class="nav">
-      <div id="name">Braden Hoagland</div>
-      <div id="subname">UVa Computer Science</div>
-    </div>
-  </div>
+<div id="everything">
 
-  <div class="block">
-    <div class="header">Reinforcement Learning Projects</div>
+    <!-- ABOUT ME -->
+    <div class="section">
+        <div class="header">About Me</div>
 
-    <div class="project">
-      <div class="project-name">Policy Optimization</div>
-      <div class="project-description">This is a description</div>
-    </div>
+        <div class="item">
+            <div class="desc">I'm a first year Computer Science major at the University of Virginia,
+                currently taking part in reinforcement learning research with CavML on more efficient methods
+                of generalization in transfer learning. I work part time as a machine learning engineer at Decipher Technology Studios.
+                <br/><br/> ----
+            </div>
+        </div>
 
-    <div class="project">
-      <div class="project-name">Policy Optimization</div>
-      <div class="project-description">This is a description</div>
-    </div>
-
-    <div class="project">
-      <div class="project-name">Policy Optimization</div>
-      <div class="project-description">This is a description</div>
+        <div class="item">
+            <div class="desc">Email: <a href="mailto:bch4ht@virginia.edu">bch4ht@virginia.edu</a></div>
+        </div>
+        <div class="item">
+            <div class="desc">GitHub: <a href="https://github.com/bchoagland" target="_blank">BCHoagland</a></div>
+        </div>
     </div>
 
-    <div class="project">
-      <div class="project-name">Policy Optimization</div>
-      <div class="project-description">This is a description</div>
-    </div>
-  </div>
+    <!-- RL PROJECTS -->
+    <div class="section">
+        <div class="header">RL Projects</div>
 
-  <script type="text/javascript" src="script.js"></script>
+        <div class="item">
+            <div class="name"><a href="https://github.com/BCHoagland/RL-Utils" target="_blank">PyTorch RL Utils</a></div>
+            <div class="desc">A collection of reinforcement learning utilities created with PyTorch for use with OpenAI Gym environments</div>
+        </div>
+
+        <div class="item">
+            <div class="name"><a href="https://github.com/BCHoagland/Policy-Optimization" target="_blank">Policy Optimization</a></div>
+            <div class="desc">Simple implementations of common policy optimization algorithms</div>
+        </div>
+
+        <div class="item">
+            <div class="name"><a href="https://github.com/BCHoagland/Autoencoders" target="_blank">Autoencoders</a></div>
+            <div class="desc">Implementations of and latent space demonstrations with autoencoders, VAEs, and β-VAEs</div>
+        </div>
+
+        <div class="item">
+            <div class="name"><a href="https://github.com/BCHoagland/DARLA" target="_blank">DARLA</a></div>
+            <div class="desc">DisentAngled Representation Learning Agent (DARLA) pipeline</div>
+        </div>
+    </div>
+
+    <!-- MISC PROJECTS -->
+    <div class="section">
+        <div class="header">Misc. Projects</div>
+
+        <div class="item">
+            <div class="name"><a href="http://bradenhoagland.me/MUN-Timer/" target="_blank">MUN Timer</a></div>
+            <div class="desc">JavaScript timer made for chairing MUN committees</div>
+        </div>
+
+        <div class="item">
+            <div class="name"><a href="http://bradenhoagland.me/uva-scheduler/" target="_blank">UVa Scheduler</a></div>
+            <div class="desc">Scheduling app for automatically finding compatible schedules given your classes</div>
+        </div>
+
+        <div class="item">
+            <div class="name"><a href="https://github.com/BCHoagland/Iris" target="_blank">Iris</a></div>
+            <div class="desc">MacOS Personal Assistant, made to manage quick communication</div>
+        </div>
+    </div>
+</div>
+
+    <script type="text/javascript" src="script.js"></script>
 </body>
 </html>
