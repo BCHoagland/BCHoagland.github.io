@@ -1,101 +1,53 @@
 :root {
-  --comp: #888;
-  --comp-dark: black;
-  --nav: #f8f8f8;
+  --theme: rgba(250, 128, 114, 1);
 }
 
 body {
-  color: black;
-  font-family: Lora;
-  font-size: 1.8em;
+    font-family: Lora;
+    padding: 10em;
 }
 
 a {
-  text-decoration: none;
-  color: var(--comp);
-  transition: all 0.4s;
+    color: #333;
+    text-decoration: none;
+    transition: all 0.2s;
 }
 
 a:hover {
-  text-decoration: none;
-  color: var(--comp-dark);
+    color: var(--theme);
+    text-decoration: none;
 }
 
 a:active {
-  text-decoration: none;
+    filter: brightness(85%);
 }
 
-.project div:first-child {
-  color: black;
-  font-weight: bold;
-  margin-bottom: 0.4em;
+#everything {
+    width: 40vw;
+    margin: auto;
 }
 
-/*##########
-NAV
-##########*/
-
-#nav {
-  padding: 3em 2em 3em 2em;
-  background-color: var(--nav);
+.section {
+    margin-top: 10em;
 }
 
-#nav div:hover {
-  cursor: pointer;
-  transition: all 0.4s;
+.section:first-child {
+    margin-top: 0;
 }
 
-#nav div:first-child:hover {
-  cursor: default;
+.header {
+    font: 3em 'Lulo Clean';
+    display: inline-block;
+    padding-bottom: 0.6em;
+    border-bottom: 4px solid var(--theme);
 }
 
-#nav div {
-  float: right;
-  padding: 0 0.4em 0.6em 0.4em;
-  border-bottom: 2px solid transparent;
-  margin: -1em 1em 0 1em;
+.item {
+    font-size: 1.4em;
+    margin-top: 2em;
+    margin-bottom: 2em;
 }
 
-#nav div:first-child {
-  float: left;
-  font-size: 1.4em;
-  padding-left: 1.4em;
-  border: none;
-  margin: 0;
-  margin-top: -0.8em;
-}
-
-/*##########
-PANES
-##########*/
-
-.pane {
-  margin-top: 2em;
-  padding: 1em 2em 2em 2em;
-  display: none;
-}
-
-.pane > div {
-  padding: 0;
-  padding-left: 2em;
-}
-
-.pane .header {
-  padding: 1em;
-  font-size: 2em;
-}
-
-.pane .description {
-  margin-bottom: 2em;
-}
-
-.pane .project {
-  padding: 2em;
-  display: inline-block;
-  /* max-width: 50%; */
-}
-
-span {
-  padding: 0.8em 2em 0.8em 2em;
-  display: block;
+.name {
+    font-weight: bold;
 }
