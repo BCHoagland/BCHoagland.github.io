@@ -3,8 +3,9 @@
 }
 
 body {
-    font-family: Lora;
-    padding: 10em;
+    font-family: 'Open Sans';
+    font-weight: 300;
+    padding: 4em;
 }
 
 a {
@@ -28,7 +29,9 @@ a:active {
 }
 
 .section {
-    margin-top: 10em;
+    margin-top: 4em;
+    border: 1px solid #333;
+    padding: 4em;
 }
 
 .section:first-child {
@@ -36,14 +39,15 @@ a:active {
 }
 
 .header {
-    font: 3em 'Lulo Clean';
+    font: 3em Lora;
+    font-weight: bold;
     display: inline-block;
     padding-bottom: 0.6em;
-    border-bottom: 4px solid var(--theme);
+    border-bottom: 2px solid var(--theme);
 }
 
 .item {
-    font-size: 1.4em;
+    font-size: 1.2em;
     margin-top: 2em;
     margin-bottom: 2em;
 }
