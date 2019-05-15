@@ -2,38 +2,49 @@
 <html>
 <head>
     <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script> -->
-    <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"> -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"> -->
-    <link href="https://fonts.googleapis.com/css?family=Lora:400,700" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,700" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css?family=Libre+Baskerville:400,700|Source+Sans+Pro:300,400,700" rel="stylesheet">
+    <link rel="stylesheet" href="styling/style.css">
     <title>Braden Hoagland</title>
 </head>
 <body>
-<div id="everything">
+
+<div class="row">
+    <!-- IMAGE -->
+    <div class="col-md-5 offset-md-1">
+        <div class="img-container">
+            <img src="img/braden.png"/>
+        </div>
+    </div>
 
     <!-- ABOUT ME -->
-    <div class="section">
-        <div class="header">About Me</div>
+    <div class="col-md-5 section">
+        <div class="header">About Me<div class="line"></div></div>
 
         <div class="item">
             <div class="desc">I'm a Computer Science and Mathematics major at Duke University,
-                currently taking part in reinforcement learning research on more efficient methods
-                of generalization in transfer learning. I work part time as a machine learning engineer at Decipher Technology Studios.
+                currently taking part in research on more efficient methods of generalization and
+                environment modeling in the reinforcement learning setting. I work part time as a machine
+                learning engineer at Decipher Technology Studios in Alexandria, VA.
                 <br/><br/>
             </div>
         </div>
 
         <div class="item">
-            <div class="desc">Email: <a href="mailto:bch4ht@virginia.edu">bch4ht@virginia.edu</a></div>
-            <br/>
+            <div class="desc">Email: <a href="mailto:bhoggland@gmail.com">bhoggland@gmail.com</a></div>
+            <!-- <br/> -->
             <div class="desc">GitHub: <a href="https://github.com/bchoagland" target="_blank">BCHoagland</a></div>
+            <br/>
+            <div class="desc"><a href="files/hoagland_CV.pdf" target="_blank">Curriculum Vitae</a></div>
         </div>
     </div>
+</div>
 
+<div class="row">
     <!-- ML PROJECTS -->
-    <div class="section">
-        <div class="header">ML Projects</div>
+    <div class="col-md-5 offset-md-1 section">
+        <div class="header">ML Projects<div class="line"></div></div>
 
         <div class="item">
             <div class="name"><a href="https://github.com/BCHoagland/RL-Utils" target="_blank">PyTorch RL Utils</a></div>
@@ -51,31 +62,36 @@
         </div>
 
         <div class="item">
+            <div class="name"><a href="https://github.com/BCHoagland/GANs" target="_blank">GANs</a></div>
+            <div class="desc">Implementations of Generative Adversarial Networks for image generation</div>
+        </div>
+
+        <div class="item">
+            <div class="name"><a href="https://github.com/BCHoagland/Transfer-Learning" target="_blank">Transfer Learning</a></div>
+            <div class="desc">Various transfer learning algorithms for basic regression tasks</div>
+        </div>
+
+        <div class="item">
             <div class="name"><a href="https://github.com/BCHoagland/DARLA" target="_blank">DARLA</a></div>
-            <div class="desc">DisentAngled Representation Learning Agent (DARLA) pipeline</div>
+            <div class="desc">DisentAngled Representation Learning Agent (DARLA) pipeline for zero-shot transfer learning</div>
         </div>
     </div>
 
-    <!-- MISC PROJECTS -->
-    <div class="section">
-        <div class="header">Misc. Projects</div>
+    <!-- RL POSTS -->
+    <div class="col-md-5 section">
+        <div class="header">RL Posts<div class="line"></div></div>
 
         <div class="item">
-            <div class="name"><a href="http://bradenhoagland.me/MUN-Timer/" target="_blank">MUN Timer</a></div>
-            <div class="desc">JavaScript timer made for chairing MUN committees</div>
+            <div class="name"><a href="posts/pg.html">Policy Gradients</a></div>
+            <div class="desc">An introduction to the vanilla policy gradient</div>
         </div>
 
         <div class="item">
-            <div class="name"><a href="http://bradenhoagland.me/uva-scheduler/" target="_blank">UVa Scheduler</a></div>
-            <div class="desc">Scheduling app for automatically finding compatible schedules given your classes</div>
-        </div>
-
-        <div class="item">
-            <div class="name"><a href="https://github.com/BCHoagland/Iris" target="_blank">Iris</a></div>
-            <div class="desc">MacOS Personal Assistant, made to manage quick communication</div>
+            <div class="name"><a href="posts/ac.html">Actor-Critic</a></div>
+            <div class="desc">Strengthening the policy gradient with advantage approximation</div>
         </div>
     </div>
 </div>
-<script type="text/javascript" src="script.js"></script>
+
 </body>
 </html>

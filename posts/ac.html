@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+    integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css?family=Libre+Baskerville:400,700|Source+Sans+Pro:300,700" rel="stylesheet">
+    <link rel="stylesheet" href="../styling/style.css">
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+    <title>Braden Hoagland</title>
+</head>
+<body>
+
+<div id="home-link"><a href="/">Home</a></div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="header">Actor-Critic Methods</div>
+
+        <div class="algo">
+        <div>Actor-Critic</div>
+        Repeat:
+            <div>
+            Sample \( \{s_i, a_i\} \) using \( \pi_\theta(a|s) \) <br/>
+            Compute \( \hat{R}_i \, \forall \, i \) <br/>
+            \( \phi \gets \arg\min_\phi \frac{1}{2} \sum_i \| V_\phi(s_i) - \hat{R}_i \|^2 \) <br/>
+            \( \hat{A}_i \gets r(s_i, a_i) + \gamma V_\phi(s'_i) - V_\phi(s_i) \) <br/>
+            \( \theta \gets \theta + \alpha\big(\sum_i \nabla_\theta\log\pi_\theta(a_i|s_i) \hat{A}_i\big) \)
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

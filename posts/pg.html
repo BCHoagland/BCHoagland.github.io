@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+    integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css?family=Libre+Baskerville:400,700|Source+Sans+Pro:300,700" rel="stylesheet">
+    <link rel="stylesheet" href="../styling/style.css">
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+    <title>Braden Hoagland</title>
+</head>
+<body>
+
+<div id="home-link"><a href="/">Home</a></div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="header">Policy Gradient Methods</div>
+
+        <p>
+        A relatively straightforward approach to reinforcement learning is to create a neural network, parameterized by \( \theta \),
+        which maps states directly to actions. We'll call this our policy network. Then we can just use gradient ascent on some performance
+        objective w.r.t \( \theta \) to reach some local performance optimum.
+        If we define \( J(\theta) \) to be this objective, then the update rule for our network is simply \[ \theta \gets
+        \theta + \alpha\nabla_\theta J(\theta) \]
+        </p>
+
+        <p>
+        Now all we have to do is determine what the gradient of our performance objective actually is. We can start off with a simple
+        case where we want to maximize the cumulative reward that our agent receives. We could easily define \[ J(\theta) =
+        \mathbb{E}_{\tau \sim \pi_\theta} [r(\tau)] \] where \( \tau \) is any trajectory. Although reward functions are rarely
+        continuous themselves, their expected values will be. Thus \(J(\theta)\) is differentiable and we can find a numerical value
+        for its gradient; however, we need to know how a function is defined in order to find its gradient. In any environment,
+        \( r(\tau) \) will be unknown to us, much less defined in terms of \( \theta \).
+        </p>
+
+        <p>
+        To get around this, we'll use the identity \( \nabla x = x \nabla\log x \), which can be seen to be true
+        since \( \nabla\log x = \frac{\nabla x}{x} \).
+        \[
+        \begin{align*}
+            \nabla_\theta J(\theta) &= \nabla_\theta \mathbb{E}_{\tau\sim\pi_\theta}[r(\tau)] \\
+            &= \nabla_\theta \int_\tau \pi_\theta(\tau) r(\tau) d\tau \\
+            &= \int_\tau \nabla_\theta \pi_\theta(\tau) r(\tau) d\tau \\
+            &= \int_\tau \pi_\theta(\tau) \nabla_\theta\log\pi_\theta(\tau) r(\tau) d\tau \\
+            &= \mathbb{E}_{\tau\sim\pi_\theta}[\nabla_\theta\log\pi_\theta(\tau) r(\tau)]
+        \end{align*}
+        \]
+        Now we've defined our gradient in terms of something other than \( r(\tau) \) directly, but how is this better? With a bit of math,
+        it can be seen that this new expression only depends on how we define our policy network and nothing else, which means that we
+        can calculate it.
+        </p>
+
+        <p>
+        The probability of an entire trajectory taking place can be expressed
+        \[
+        \begin{align*}
+        \pi_\theta(\tau) &= p(s_0) \displaystyle\prod_{t=0}^T \pi_\theta(a_t | s_t) p(s_{t+1} | s_t, a_t) \\
+        \log \pi_\theta(\tau) &= \log p(s_0) + \displaystyle\sum_{t=0}^T \log \pi_\theta(a_t | s_t) +
+        \log p(s_{t+1} | s_t, a_t)
+        \end{align*}
+        \]
+        The first and final terms of the log probability don't rely on \( \theta \) at all, so their gradient
+        w.r.t. \( \theta \) is 0. Our gradient then only relies on \( \log \pi_\theta(a_t|s_t) \) (the middle term), which is completely
+        determined by our network.
+        </p>
+
+        <p>
+        So how do we go about finding the data we need to calculate this? If we could sample infinite trajectories, we could easily find
+        the expectation we're looking for. That's impossible, though, so we can sample \( N \) trajectories instead, making our gradient really
+        just an approximation.
+        \[
+        \nabla_\theta J(\theta) \approx \frac{1}{N} \sum_i \nabla_\theta\log\pi_\theta(\tau_i) r(\tau_i)
+        \]
+        </p>
+
+        <p>
+        Now that we've defined our gradient solely in terms of our policy network, we can make a very simple algorithm (the classic
+        REINFORCE algorithm) that we'll build off of from here
+        </p>
+
+        <div class="algo">
+        <div>REINFORCE</div>
+        Repeat:
+            <div>
+            Sample \( \{\tau_i\} \) using \( \pi_\theta \) <br/>
+            \( \nabla_\theta J(\theta) \approx \sum_i \nabla_\theta\log\pi_\theta(\tau_i) r(\tau_i) \) <br/>
+            \( \theta \gets \theta + \alpha\nabla_\theta J(\theta) \)
+            </div>
+        </div>
+
+        <p>
+        Intuitively, this algorithm can be seen to maximize the reward we're getting, as well as the probability of getting those high rewards.
+        As a quick note, notice that there's no \( \frac{1}{N} \) term in the algorithm. That's because it's a constant and we can thus
+        pretend like it's really just a component of our learning rate \( \alpha \).
+        </p>
+
+        <p>
+        Unfortunately, this algorithm by itself won't work very well (at least not in complicated environments). That's because our estimates
+        will have very high variance. We'll only ever be able to sample a small number of all the possible trajectories our policy could
+        cause, after all. We can't find a magic way to sample more trajectories, though, so we'll have to find aspects of our gradient expression
+        that can be made more precise.
+        </p>
+
+        <p>
+        We'll start by expanding out our gradient expression to be in terms of timesteps, not trajectories
+        \[
+        \begin{align*}
+        \nabla_\theta J(\theta) &= \mathbb{E}_{\tau\sim\pi_\theta}[\nabla_\theta\log\pi_\theta(\tau) r(\tau)] \\
+        &= \mathbb{E}\Big[\sum_t \nabla_\theta\log\pi_\theta(a_t|s_t) \sum_t r(s_t, a_t)\Big]
+        \end{align*}
+        \]
+        One observation from this is that each timestep is multiplied by the reward from the entire trajectory. This means that actions
+        will be rewarded if previous actions were good and punished if previous actions were bad. This makes no sense since
+        previous rewards have nothing to do with current actions, so we'll change things up a bit. We'll define a new type of return,
+        our "reward-to-go", as only those rewards that come after a given timestep.
+        \[ \hat{R}_t = \sum_{t'=t}^T r(s_{t'}, a_{t'}) \]
+        (As written, this is undiscounted reward. Reward-to-go also works with discount factors) We can then rewrite our policy gradient as
+        \[ \nabla_\theta J(\theta) =  \mathbb{E}\Big[\sum_t \nabla_\theta\log\pi_\theta(a_t|s_t) \hat{R}_t \Big] \]
+        Intuitively, this new definition makes a lot of sense. Mathematically, it also works out. The proof is pretty involved, though, so I'm
+        not going to go over it. If you want to take a look at it (which I suggest doing sometime), a good explanation of it from OpenAI can be found
+        <a href="https://spinningup.openai.com/en/latest/spinningup/extra_pg_proof1.html" target="_blank">here</a>.
+        </p>
+
+        <p>
+        Using reward-to-go will decrease the variance of our estimates, but we can edit our reward definition even further. Rewards from an
+        environment won't necessarily be normalized, which can really slow down the convergence of our policy. Imagine an environment where
+        all rewards are positive. Our current algorithm will try to make the probabilities of every action higher. In an environment where all
+        rewards are negative, our algorithm will try to lower the probailities of each action. Our policy will still converge eventually, but
+        it will be slowed down for sure. To combat this, we'll just normalize the rewards as we get them with what we call a "baseline"
+        \[ \nabla_\theta J(\theta) = \mathbb{E}_{\tau\sim\pi_\theta}[\nabla_\theta\log\pi_\theta(\tau) (r(\tau) - b)] \]
+        \( b \) in this expression is any value that doesn't depend on \( \tau \) (This is much more subtle, but dependence on state is okay
+        while dependence on action introduces some bias). I used \( r(\tau) \) for brevity and generality, but this applies with reward-to-go as well.
+        </p>
+
+        <p>
+        Although it may not seem intuitive, this policy gradient is equivalent in expectation to our base policy gradient from earlier. We can
+        distribute the terms to make it more obvious how to show this
+        \[
+        \begin{align*}
+        \nabla_\theta J(\theta) &= \mathbb{E}_{\tau\sim\pi_\theta}[\nabla_\theta\log\pi_\theta(\tau) (r(\tau) - b)] \\
+        &= \mathbb{E}_{\tau\sim\pi_\theta}[\nabla_\theta\log\pi_\theta(\tau)\, r(\tau) - \nabla_\theta\log\pi_\theta(\tau)\, b]
+        \end{align*}
+        \]
+        This policy gradient can now be seen to just be our original policy gradient with one additional term. If this second term is 0 in expectation,
+        then this is equal to our original policy gradient in expectation too
+        \[
+        \begin{align*}
+        \mathbb{E}[\nabla_\theta\log\pi_\theta(\tau) b] &= \int_\tau \pi_\theta(\tau) \nabla_\theta\log\pi_\theta(\tau)\, b\, d\tau \\
+        &= \int_\tau \nabla_\theta(\tau)\, b\, d\tau && \text{(grad log trick again)} \\
+        &= b \nabla_\theta \int_\tau \pi_\theta(\tau)\, d\tau && \text{(if \(b\) is not dependent on \(\tau\))} \\
+        &= b \nabla_\theta 1 \\
+        &= 0
+        \end{align*}
+        \]
+        Thus our new policy gradient is equal in expectation to the old one. The only thing that's different about it could be its variance. A common
+        choice for \( b \) that gives good results is the current mean reward
+        </p>
+
+        <p>
+        We've found a better reward measure and proven that adding in a baseline is okay, but this is all based on my arbitrary choice at the beginning
+        of this article to define \( J(\theta) \) as the expectation of cumulative reward. Why did I have to do this? I didn't, really, and that's the
+        intuition behind other variants of the policy gradient. We can subsitute in other reward measures and use the same tricks to show that they're
+        all mathemtically sound. Thus our general form of the policy gradient can be expressed
+        \[ \nabla_\theta J(\theta) = \mathbb{E}_{\tau\sim\pi_\theta}[\nabla_\theta\log\pi_\theta(\tau)\, \Phi] \]
+        where \( \Phi \) is any measure of performance. We can use unmodified rewards, rewards-to-go, or either one of
+        these with a baseline. Another, more powerful, verion of \( \Phi \) involves using an additional neural network to approximate a performance
+        measure. This network won't represent just be a single reward sample (like our other expressions use), but an expectation of reward for a given
+        state and action. This can significantly reduce variance for complicated environments, and we'll look more into what this means and how to do
+        it when we talk about Actor-Critic algorithms.
+        </p>
+    </div>
+</div>
+
+</body>
+</html>
