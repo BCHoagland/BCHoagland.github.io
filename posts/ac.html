@@ -64,7 +64,7 @@
         terminated and then run supervised regression on our value estimate using those returns
         \[
         y_{i,t} = \hat{R}_{i,t} = \sum_{t'=t}^T r(s_{i,t'}, a_{i,t'}) \\
-        \mathcal{L}(\phi) = \frac{1}{2} \sum_i \| \hat{V}^\pi_\phi(s_i) - y_i \|^2 \\
+        \mathcal{L}(\phi) = \frac{1}{2} \sum_i \| V^\pi_\phi(s_i) - y_i \|^2 \\
         \phi \gets \arg\min\limits_\phi \mathcal{L}(\phi)
         \]
         This is all we need to make the policy gradient into an actor-critic algorithm. Calculating rewards-to-go means that we still have to wait
@@ -76,15 +76,15 @@
         Repeat:
             <div>
             Sample \( \{s_i, a_i\} \) using \( \pi_\theta(a|s) \) <br/>
-            Fit \( \hat{V}^\pi_\phi \) using sampled returns <br/>
-            \( \hat{A}_i \gets r(s_i, a_i) + \gamma \hat{V}^\pi_\phi(s'_i) - \hat{V}^\pi_\phi(s_i) \) <br/>
-            \( \theta \gets \theta + \alpha\big(\sum_i \nabla_\theta\log\pi_\theta(a_i|s_i) \hat{A}_i\big) \)
+            Fit \( V^\pi_\phi \) using sampled returns <br/>
+            \( A_i \gets r(s_i, a_i) + \gamma V^\pi_\phi(s'_i) - V^\pi_\phi(s_i) \) <br/>
+            \( \theta \gets \theta + \alpha\big(\sum_i \nabla_\theta\log\pi_\theta(a_i|s_i) A_i\big) \)
             </div>
         </div>
 
         <p>
         In order to get to online learning, we'll have to introduce some bias into our regression targets. We can express a single target as
-        \( y_{i,t} = r(s_{i,t}, a_{i,t}) + \hat{V}^\pi_\phi(s_{i,t+1}) \). This is itself based on \( \hat{V}^\pi_\phi \) (which is what we're trying to
+        \( y_{i,t} = r(s_{i,t}, a_{i,t}) + V^\pi_\phi(s_{i,t+1}) \). This is itself based on \( V^\pi_\phi \) (which is what we're trying to
         improve with the regression in the first place), but can actually lower variance once our estimator gets good enough. We're purposefully
         trading increased bias for lower variance, and this is usually worth it.
         </p>
@@ -101,9 +101,9 @@
         Repeat:
             <div>
             Take \( a \sim \pi_\theta(a|s) \), get \( (s, a, r, s') \) <br/>
-            Update \( \hat{V}^\pi_\phi \) using target \( r + \gamma \hat{V}^\pi_\phi(s') \) <br/>
-            \( \hat{A} \gets r(s, a) + \gamma \hat{V}^\pi_\phi(s') - \hat{V}^\pi_\phi(s) \) <br/>
-            \( \theta \gets \theta + \alpha\big(\nabla_\theta\log\pi_\theta(a|s) \hat{A}\big) \)
+            Update \( V^\pi_\phi \) using target \( r + \gamma V^\pi_\phi(s') \) <br/>
+            \( A \gets r(s, a) + \gamma V^\pi_\phi(s') - V^\pi_\phi(s) \) <br/>
+            \( \theta \gets \theta + \alpha\big(\nabla_\theta\log\pi_\theta(a|s) A\big) \)
             </div>
         </div>
 
@@ -119,16 +119,16 @@
         more influence on the final value (\( w_n \propto \lambda^{n-1} \))
         \[
         \begin{align*}
-        \hat{A}^\pi_n &= \sum_{t'=t}^{t+n} \gamma^{t'-t} r(s_{t'}, a_{t'}) + \gamma^n \hat{V}^\pi_\phi(s_{t+n}) - \hat{V}^\pi_\phi(s_t) \\
-        \hat{A}^\pi_{GAE}(s_t, a_t) &= \sum_{t'=t}^\infty w_n(\hat{A}^\pi_n(s_t, a_t))
+        A^\pi_n &= \sum_{t'=t}^{t+n} \gamma^{t'-t} r(s_{t'}, a_{t'}) + \gamma^n V^\pi_\phi(s_{t+n}) - V^\pi_\phi(s_t) \\
+        A^\pi_{GAE}(s_t, a_t) &= \sum_{t'=t}^\infty w_n(A^\pi_n(s_t, a_t))
         \end{align*}
         \]
         This can be simplified to make it easier to calculate in an actual program. Since this is a telescoping series, we can cancel out some terms
         and be left with
         \[
         \begin{align*}
-        \hat{A}^\pi_{GAE}(s_t, a_t) &= \sum_{t'=t}^\infty (\gamma\lambda)^{t'-t} \delta_{t'} \\
-        \delta_{t'} &= r(s_{t'}, a_{t'}) + \gamma\hat{V}^\pi_\phi(s_{t'+1}) - \hat{V}^\pi_\phi(s_{t'})
+        A^\pi_{GAE}(s_t, a_t) &= \sum_{t'=t}^\infty (\gamma\lambda)^{t'-t} \delta_{t'} \\
+        \delta_{t'} &= r(s_{t'}, a_{t'}) + \gamma V^\pi_\phi(s_{t'+1}) - V^\pi_\phi(s_{t'})
         \end{align*}
         \]
         In practice we obviously can't sum up through infinity, so we'll just go a reasonable distance into the future and compute the advantage
