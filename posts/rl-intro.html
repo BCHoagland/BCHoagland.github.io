@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+    integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css?family=Libre+Baskerville:400,700|Source+Sans+Pro:300,700" rel="stylesheet">
+    <link rel="stylesheet" href="../styling/style.css">
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+    <title>Intro to RL</title>
+</head>
+<body>
+
+<div id="home-link"><a href="/">Home</a></div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="header">Intro to RL</div>
+
+        <p>
+        Reinforcement learning is a branch of machine learning that focuses on creating agents that can learn to improve their performance on a
+        given task using only their past experience with that task. The agent interacts with its environment at discrete timesteps, performing an
+        action based on the current state of the environment and then receiving a reward signal to indicate how well it is performing. The environment
+        then updates as a result of the agent's action and the process repeats.
+        </p>
+
+        <p>
+        Most reinforcement learning environments can be classified as Markov Decision Processes (MDPs). An MDP is a 4-tuple
+        \[ \{\mathcal{S}, \mathcal{A}, \mathcal{T}, r\} \]
+        where \(\mathcal{S}\) denotes all possible states of the environment, \(\mathcal{A}\) denotes all possible actions the agent can take,
+        \(\mathcal{T}\) denotes the transition probabilities from one state to another given an action, and \(r\) denotes a reward function
+        \( \mathcal{S} \times \mathcal{A} \to \mathbb{R} \) that translates a state-action pair to a single real number indicating agent performance. In
+        many environments, the very first state is randomly selected from some probability distribution \( s_0 \sim p_0(\cdot) \)
+        </p>
+
+        <p>
+        Interactions with the environment can be grouped together into what are called rollouts or trajectories. These are tuples of states and actions
+        in the order in which they are observed or taken, respectively.
+        \[ \tau = (s_0, a_0, s_1, a_1, ...) \]
+        In some environments, it is possible for the agent to fail the task in some way and cause the trajectory to terminate and the
+        environment to reset. These trajectories are referred to as episodes. Whenever the agent performs an action in the environment, the next
+        state of the environment is determined by the previous state and that action. This can be through a deterministic transition function
+        \(f(s_t, a_t)\) or a stochastic transition function \(p(s_{t+1} | s_t, a_t)\)
+        </p>
+
+        <p>
+        Rewards at each timestep are determined with the current state and action information. The reward can be expressed \(r(s_t)\), \(r(s_t, a_t)\),
+        or \(r(s_t, a_t, s_{t+1})\). The "return" is commonly used to denote some measure of cumulative reward that an agent receives. In episodic tasks,
+        a common return is the finite-horizon undiscounted return \(r(\tau) = \sum_{t=0}^T r_t\). For continuing tasks that have no endpoint,
+        such a return would diverge to infinity. As such, another common form of return is the infinite-horizon discounted reward
+        \(r(\tau) = \sum_{t=0}^\infty \gamma^t r_t\), which includes a discount factor \(\gamma\) to both ensure convergence and give more weight
+        to rewards that are received sooner in the future.
+        </p>
+
+        <p>
+        Agents interact with their enironments through some policy that takes in the current state and returns an action for the agent to take. By
+        convention, deterministic policies are denoted \(\mu_\theta(s)\) and stochastic policies are denoted \(\pi_\theta(a | s)\), where in both cases
+        \(\theta\) is a matrix of numbers representing the policy in some way (usually a neural network). Note that in the deterministic case the action
+        is returned directly and that in the stochastic case the probability of an action being taken is returned instead.
+        </p>
+
+        <p>
+        For environments in which actions are discrete values (such as Atari games with buttons for controls), probabilities for each action being taken
+        can be generated, passed through a softmax function, and then sampled from to gain a stochastic policy. These policies are referred to as
+        "Categorical". For environments in which actions are represented by real numbers (such as an environment in which an agent must determine a
+        car's target speed), a mean and standard deviation are generated and then used to sample from a Gaussian distribution. These policies are
+        referred to as "Diagonal Gaussian".
+        </p>
+
+        <p>
+        RL focuses mainly on maximizing the expected reward of any trajectory based on an agent's policy \( \mathbb{E}_{\tau\sim\pi}[r(\tau)]
+        = \int_\tau p(\tau | \pi) r(\tau)\). The optimal policy can be formalized as \(\pi^* = \arg\max_\pi \mathbb{E}_{\tau\sim\pi}[r(\tau)]\)
+        </p>
+
+        <p>
+        Another important aspect of RL is the idea of value. The value of a particular state is the expected return given that an agent starts in that
+        state and acts according to its current policy. Action-values are the same, except the action taken by the agent on that first step (and only
+        that first step) is known
+        \[
+        \begin{align*}
+        V^\pi(s) &= \mathbb{E}_{\tau\sim\pi}[r(\tau) | s_0 = s] \\
+        Q^\pi(s, a) &= \mathbb{E}_{\tau\sim\pi}[r(\tau) | s_0 = s, a_0 = a]
+        \end{align*}
+        \]
+        There exist optimal value function \(V^*\) and action-value function \(Q^*\), which are the maximum expected return given their respective inputs
+        if the agent then acts according to an optimal policy \(\pi^*\).
+        </p>
+
+        <p>
+        \(V\) and \(Q\) are closely related and can be expressed in terms of one another. These relationships become important when deriving algorithms
+        later on
+        \[
+        \begin{align*}
+        V^\pi(s) &= \mathbb{E}_{a\sim\pi}[Q^\pi(s, a)] \\
+        Q^\pi(s, a) &= r(s, a) + \mathbb{E}_{s'\sim p(s'|s,a)}[V^\pi(s')]
+        \end{align*}
+        \]
+        Intuitively, the first expression states that \(V\) is just the usual return from a state based on all actions the agent is inclined to take
+        in that state. With action-value functions, we only know the very first action taken. After that first timestep, the remainder of the return
+        is determined by the value function for whichever next state \(s'\) we usually end up in since we don't know the actions taken in those
+        future states.
+        </p>
+
+        <p>
+        A common way to express value and action-value functions is with the Bellman equations. These are basically just recursive definitions of the two
+        functions
+        \[
+        \begin{align*}
+        V^\pi(s) &= \mathbb{E}_{a\sim\pi, s\sim p}[r(s,a) + \gamma V^\pi(s')] \\
+        Q^\pi(s, a) &= \mathbb{E}_{s'\sim p}\big[r(s,a) + \gamma\mathbb{E}_{a'\sim\pi}[Q^\pi(s', a')]\big]
+        \end{align*}
+        \]
+        </p>
+
+        <p>
+        One final important concept involving value and action-value functions is the idea of advantage. Advantage can be thought of as how much better
+        a particular action does in a given state versus the agent's usual performance in that state
+        \[A^\pi(s, a) = Q^\pi(s, a) - V^\pi(s)\]
+        </p>
+
+        <p>
+        As a final note, RL algorithms all tend to have the same basic format. An agent uses its policy to generate experience with the environment,
+        that experience is used to calculate returns, and those returns are used to improve the policy so that it hopefully gets higher returns the next
+        time through the cyle.
+        </p>
+
+        <div class="algo">
+        <div>Generic RL Algorithm</div>
+        Repeat:
+            <div>
+            Use \( \pi \) to sample trajectories <br/>
+            Use the samples to calculate some performance measure <br/>
+            Use the performance measure to improve \( \pi \)
+            </div>
+        </div>
+
+        <p>
+        Navigating an environment given a policy \(\pi\) is trivial, but the second two steps of this procress are difficult and there are a handful of
+        common ways of doing both. The selection of the right performance measure can significantly improve the performance of a learning algorithm,
+        and additional steps can be taken during that second stage to, for instance, model the environment and generate simulated experience using
+        that model. Improving \(\pi\) can take on many forms. How big updates to \(\pi\) are, how exactly \(\pi\) is represented, and a balance between
+        exploring new actions and using actions the agent is already confident in are all aspects of this stage that have to be addressed.
+        </p>
+    </div>
+</div>
+
+</body>
+</html>

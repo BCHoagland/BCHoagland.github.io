@@ -6,7 +6,7 @@
     <link href="https://fonts.googleapis.com/css?family=Libre+Baskerville:400,700|Source+Sans+Pro:300,700" rel="stylesheet">
     <link rel="stylesheet" href="../styling/style.css">
     <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
-    <title>Braden Hoagland</title>
+    <title>Policy Gradient Methods</title>
 </head>
 <body>
 
@@ -163,7 +163,7 @@
         all mathemtically sound. Thus our general form of the policy gradient can be expressed
         \[ \nabla_\theta J(\theta) = \mathbb{E}_{\tau\sim\pi_\theta}[\nabla_\theta\log\pi_\theta(\tau)\, \Phi] \]
         where \( \Phi \) is any measure of performance. We can use unmodified rewards, rewards-to-go, or either one of
-        these with a baseline. Another, more powerful, verion of \( \Phi \) involves using an additional neural network to approximate a performance
+        these with a baseline. Another, more powerful, version of \( \Phi \) involves using an additional neural network to approximate a performance
         measure. This network won't represent just be a single reward sample (like our other expressions use), but an expectation of reward for a given
         state and action. This can significantly reduce variance for complicated environments, and we'll look more into what this means and how to do
         it when we talk about Actor-Critic algorithms.
