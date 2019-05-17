@@ -54,8 +54,8 @@
         &\approx r(s_t, a_t) + \gamma V^\pi(s_{t+1}) - V^\pi(s_t)
         \end{align*}
         \]
-        After a single step in our environment, we have all the information we need to calculate the advantage for that step (\(s_t\), \(a_t\),
-        \(s_{t+1}\)).
+        After a single step in our environment, we have all the information we need to calculate the advantage for that step (we only need \(s_t\),
+        \(a_t\), \(s_{t+1}\)).
         </p>
 
         <p>
@@ -90,7 +90,7 @@
         </p>
 
         <p>
-        Another important thing to note is that online learnings requires the use of a discount factor. For the batch actor-critic algorithm, we could
+        Another important thing to note is that online learning requires the use of a discount factor. For the batch actor-critic algorithm, we could
         have left out the discount factor with no negative repucussions. Our returns would have been bounded because the episodes were guaranteed to
         terminate. This guarantee does not exist for online learning, however, since we could very well be working in an infinite-horizon environment.
         In order to make sure that our value estimator can actually converge to something, we need to include a discount factor in our return definition.
@@ -110,13 +110,24 @@
         <p>
         We have a working online learning algorithm, but we can go one step further to make this closer to state-of-the-art. In order to do so,
         we need to take into account how many steps we're looking in the future for our value estimates before bootstrapping. In the above algorithm,
-        we take one step and then estimate. We could also take n-steps before estimating, though, and this in practice tends to work better. To avoid
-        having to choose a specific n, we'll use Generalized Advantage Estimation (GAE).
+        we take one step and then estimate. We could also have taken 2 steps and then estimated, though, or even 3 or 4 or... The main idea here is that
+        we can take n-steps through our environment and then use our value estimator.
+        </p>
+
+        <p>
+        In theory, all these expressions would be the same if our value estimator were perfect. In practice, though, we know that our value estimator
+        will be really bad when training first starts. During this period of training, having a large n lookahead will make our estimates more accurate.
+        Once our estimator is good, though, having a large n means that we're sampling lots of rewards instead of using our good estimate of expected
+        reward. Thus once \(V^\pi_\phi\) is accurate, we'll want low n lookaheads. This means we'll have to choose some big n to start with and then
+        anneal that down as training progresses, but this isn't ideal. It would be much nicer if we didn't have to worry about n. This is where
+        Generalized Advantage Estimation (GAE) comes in.
         </p>
 
         <p>
         GAE weights together many different n-step returns, with the weights decaying exponentially so that returns with shorter lookaheads have much
-        more influence on the final value (\( w_n \propto \lambda^{n-1} \))
+        more influence on the final value (\( w_n \propto \lambda^{n-1} \)). This allows larger n-returns to have some influence on what our
+        advantage estimate ends up being without their larger variance having much of an effect later on in training. We can define an n-step
+        advantage and then use many of those, weighted together, to form our final GAE advantage estimate
         \[
         \begin{align*}
         A^\pi_n &= \sum_{t'=t}^{t+n} \gamma^{t'-t} r(s_{t'}, a_{t'}) + \gamma^n V^\pi_\phi(s_{t+n}) - V^\pi_\phi(s_t) \\
@@ -133,7 +144,7 @@
         \]
         In practice we obviously can't sum up through infinity, so we'll just go a reasonable distance into the future and compute the advantage
         from there. Some of the current state-of-the-art algorithms are based on sampling small trajectories instead of individual observations, so
-        this usually allows for a natural cutoff when running GAE.
+        this usually allows for a natural cutoff when using GAE for advantage estimation.
         </p>
     </div>
 </div>

@@ -3,6 +3,7 @@
 }
 
 body {
+    color: #000;
     font-family: 'Source Sans Pro', sans-serif;
     font-weight: 300;
     padding: 4em;
@@ -19,7 +20,7 @@ p a {
 }
 
 a {
-    color: #333;
+    color: #000;
     font-weight: 400;
     text-decoration: none;
     transition: color 0.2s;
@@ -70,10 +71,12 @@ img {
     display: inline-block;
     /* padding-bottom: 0.6em; */
     /* border-bottom: 2px solid var(--theme); */
+}
 
-    /* background: linear-gradient(to left, #0577B1, #005587);
+a .header:hover {
+    background: linear-gradient(to left, #0577B1, #005587);
     -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent; */
+    -webkit-text-fill-color: transparent;
 }
 
 .line {

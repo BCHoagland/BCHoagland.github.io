@@ -153,7 +153,8 @@
         \end{align*}
         \]
         Thus our new policy gradient is equal in expectation to the old one. The only thing that's different about it could be its variance. A common
-        choice for \( b \) that gives good results is the current mean reward
+        choice for \( b \) that gives good results is the current mean reward. This isn't mathematically the best baseline in terms of reducing variance,
+        but it is very simple to calculate and works well enough.
         </p>
 
         <p>
@@ -164,7 +165,7 @@
         \[ \nabla_\theta J(\theta) = \mathbb{E}_{\tau\sim\pi_\theta}[\nabla_\theta\log\pi_\theta(\tau)\, \Phi] \]
         where \( \Phi \) is any measure of performance. We can use unmodified rewards, rewards-to-go, or either one of
         these with a baseline. Another, more powerful, version of \( \Phi \) involves using an additional neural network to approximate a performance
-        measure. This network won't represent just be a single reward sample (like our other expressions use), but an expectation of reward for a given
+        measure. This network won't represent just a single reward sample (like our other expressions use), but an expectation of reward for a given
         state and action. This can significantly reduce variance for complicated environments, and we'll look more into what this means and how to do
         it when we talk about Actor-Critic algorithms.
         </p>
