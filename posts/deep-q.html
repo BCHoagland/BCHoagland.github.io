@@ -39,8 +39,8 @@
 
         <p>
         The idea of the Deep Deterministic Policy Gradient (DDPG) is to learn a Q-function, use this to learn an explicit deterministic policy, and
-        then use this policy to tell us what action to use when calculating our Q-function targets. To show how to come up with this idea, we can look
-        at how to express the Bellman Equation for \(Q^\pi\)
+        then use this policy to tell us what action to use when calculating our Q-function targets. This probably seems cyclical and confusing, but
+        it should become clear as we work through the derivation. To start, we'll examine our definition of the Bellman Equation for \(Q^\pi\)
         \[
         Q^\pi(s,a) = \mathbb{E}_{s'\sim p}[r(s,a) + \gamma\mathbb{E}_{a'\sim\pi}[Q^\pi(s',a')]]
         \]
@@ -57,8 +57,8 @@
         So far, all we've done is transform our Q definition by using our policy. We did the same thing with DQN, except now we're using a generalized
         policy \(\mu\), which could be represented by a neural network or anything that's deterministic, really. To make our Q-function compatible
         with continuous action spaces, we'll need to parameterize it somehow and use function approximation to get from state-action pairs to values.
-        We can do this pretty easily (if we have enough samples from the environment) by fitting a neural network to what our environment samples
-        tell us. We'll call this our Q-network, and we'll parameterize it with \( \phi \)
+        We can do this pretty easily (if we have enough samples from the environment) by fitting a neural network to the Q definition we just made
+        using linear regression. We'll call this network our Q-network, and we'll parameterize it with \( \phi \)
         \[
         \begin{align*}
         y &= r(s,a) + \gamma Q(s', \mu(s')) \\
@@ -69,9 +69,12 @@
         </p>
 
         <p>
-        Now that we have a way of finding a Q-function approximation, we can use it to update \(\mu\) to give us actions that produce
+        Now that we have a Q-function approximation, we can use it to update \(\mu\) to give us actions that produce
         larger Q-values. We'll assume that \(\mu\) is parameterized by \(\theta\). We want to maximize \( Q(s,a) \), so we'll just take
-        its gradient w.r.t. \(\theta\) and follow that (plain old gradient ascent)
+        its gradient w.r.t. \(\theta\) and follow that. \(Q(s,a)\) has to be differentiable w.r.t. \(a\) for this to work,
+        but since we're assuming a continuous action space we can say that's true. In the literature, this gradient is written out using the chain rule
+        so that you can see explicitly that part of the gradient is w.r.t. action. This can make it look strange and complex, but conceptually we're
+        just running plain old gradient ascent
         \[
         \theta \gets \arg\max_\theta \mathbb{E}_{s\sim p}[Q(s,\mu(s))]
         \]
@@ -80,10 +83,14 @@
         <p>
         We have a way of approximating Q and we have a way of using that approximation to improve our policy, but this setup will end up being very
         unstable. Why? It has to do with how we defined our Q targets. In small, discrete environments, errors in our Q-function may not have too much
-        of an effect. In complex environments, though, small errors can significantly affect performance. Firstly, notice that the Q-function itself
+        of an effect. In complex environments, though, small errors can significantly affect performance.
+        </p>
+
+        <p>
+        Firstly, notice that the Q-function itself
         is used in the definition of the target, which introduces bias. Additionally, linear regression assumes that the data points being used have
-        no correlation with each other. Since our data is gathered sequentially, the transitions we save have strong correlation. To make matters
-        even worse, having a deterministic policy means that we have zero exploration. Our policy will only ever try to exploit what the current
+        no correlation with each other. Since our data is gathered sequentially, though, the transitions we save will have strong correlation. To make
+        matters even worse, having a deterministic policy means that we have zero exploration. Our policy will only ever try to exploit what the current
         Q-network says, and we know that our Q-network will be pretty crappy when we start training.
         </p>
 
@@ -101,8 +108,8 @@
         </p>
 
         <p>
-        To make our agent explore, we'll simply add some random noise to the actions it gives us during training. With this trick, plus the previous ones,
-        we can form the DDPG algorithm
+        To make our agent explore, we'll simply add some random noise to the actions our policy gives us during training. With this trick, plus the
+        previous ones, we can form the DDPG algorithm
         </p>
 
         <div class="algo">
@@ -127,7 +134,7 @@
                     \( L = \frac{1}{|B|}\sum (Q(s, a) - y)^2 \) <br/>
                     Run backpropagation on \(L\) w.r.t. \(\phi\) <br/><br/>
 
-                    \( P = -\frac{1}{N}\sum Q(s, \mu(s)) \) <br/>
+                    \( P = -\frac{1}{|B|}\sum Q(s, \mu(s)) \) <br/>
                     Run backpropagation on \(P\) w.r.t. \(\theta\) <br/><br/>
 
                     \( \bar{\phi} \gets \tau \bar{\phi} + (1 - \tau)\phi \) <br/>
@@ -139,8 +146,8 @@
 
         <p>
         DDPG can perform well, but it can be very brittle with respect to its hyperparameters for a number of reasons. All these problems stem from
-        estimation errors in our Q-network, and there are a number of tricks that we can use to mitigate these issues. Our end goal is to make it much
-        harder for our policy to exploit errors in our Q-value estimates and force these estimates to be more precise in the first place.
+        more estimation errors in our Q-network, and there are a number of tricks that we can use to mitigate these issues. Our end goal is to make
+        it much harder for our policy to exploit errors in our Q-value estimates and force these estimates to be more precise in the first place.
         </p>
 
         <p>
@@ -205,7 +212,7 @@
         <p>
         TD3 has a lot going on, but it tends to be much more stable than the original DDPG. There are just a few small notes left to go over. Firstly,
         both DDPG and TD3 train faster if you allow the agent to explore randomly for a bit before training and prepopulate the replay buffer with the
-        transitions it observes. This kickstarts exploration and gives the agent something to start working with when it does its normal exploration.
+        transitions it observes. This kickstarts exploration and gives the agent a better unerstanding of the state space when it's first starting out.
         </p>
 
         <p>
