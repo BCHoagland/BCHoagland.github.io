@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+    integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css?family=Libre+Baskerville:400,700|Source+Sans+Pro:300,700" rel="stylesheet">
+    <link rel="stylesheet" href="../styling/style.css">
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+    <title>Deep Q-Learning</title>
+</head>
+<body>
+
+<div id="home-link"><a href="/">Home</a></div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="header">Deep Q-Learning</div>
+
+        <p><i>
+        I should probably write something about normal Q-learning so there's some background for this. Oops.
+        </i></p>
+
+        <p>
+        After seeing the success of DQN on Atari environments, RL researchers quickly looked for ways to expand DQN to more complicated environments.
+        For discrete action spaces, DQN worked well enough. For continuous action spaces, though, DQN has a gaping flaw. Its Q-function targets are
+        defined
+        \[
+        \begin{align*}
+        Q(s,a) &= \mathbb{E}_{s'}[r(s,a) + \gamma\mathbb{E}_{a'}[Q(s',a')]] \\
+        &= \mathbb{E}_{s'}[r(s,a) + \gamma\max_{a'} Q(s',a')] \\
+        y &= r(s,a) + \gamma\max_{a'} Q(s',a') \\
+        \end{align*}
+        \]
+        We can get rid of the inner expectation because the "policy" is taking whichever action maximizes the Q function at the current state. We know
+        that the chosen action will be deterministic, so we don't need an expectation. For small, discrete action spaces, checking Q-values for each
+        action isn't hard to do at all. For continuous action spaces, though, we would have to test infinite actions to find the max Q.
+        This obviously isn't possible, so we'll need another way.
+        </p>
+
+        <p>
+        The idea of the Deep Deterministic Policy Gradient (DDPG) is to learn a Q-function, use this to learn an explicit deterministic policy, and
+        then use this policy to tell us what action to use when calculating our Q-function targets. To show how to come up with this idea, we can look
+        at how to express the Bellman Equation for \(Q^\pi\)
+        \[
+        Q^\pi(s,a) = \mathbb{E}_{s'\sim p}[r(s,a) + \gamma\mathbb{E}_{a'\sim\pi}[Q^\pi(s',a')]]
+        \]
+        This equation is pretty clunky because of the inner expectation over actions, so we'll use a deterministic policy \( \mu \) instead of the
+        stochastic \( \pi \) that we're used to. Just like with the DQN targets, using a deterministic policy means that we don't need an expectation
+        \[
+        Q^\mu(s,a) = \mathbb{E}_{s'\sim p}[r(s,a) + \gamma Q^\mu(s', \mu(s'))]
+        \]
+        This new expression is only variable with respect to the next state of the environment, so we can estimate it by just sampling tons of transitions
+        from the environment and plugging them into this expression.
+        </p>
+
+        <p>
+        So far, all we've done is transform our Q definition by using our policy. We did the same thing with DQN, except now we're using a generalized
+        policy \(\mu\), which could be represented by a neural network or anything that's deterministic, really. To make our Q-function compatible
+        with continuous action spaces, we'll need to parameterize it somehow and use function approximation to get from state-action pairs to values.
+        We can do this pretty easily (if we have enough samples from the environment) by fitting a neural network to what our environment samples
+        tell us. We'll call this our Q-network, and we'll parameterize it with \( \phi \)
+        \[
+        \begin{align*}
+        y &= r(s,a) + \gamma Q(s', \mu(s')) \\
+        L(\phi) &= \mathbb{E}[(Q(s,a) - y)^2] \\
+        \phi &\gets \arg\min_{\phi} L(\phi)
+        \end{align*}
+        \]
+        </p>
+
+        <p>
+        Now that we have a way of finding a Q-function approximation, we can use it to update \(\mu\) to give us actions that produce
+        larger Q-values. We'll assume that \(\mu\) is parameterized by \(\theta\). We want to maximize \( Q(s,a) \), so we'll just take
+        its gradient w.r.t. \(\theta\) and follow that (plain old gradient ascent)
+        \[
+        \theta \gets \arg\max_\theta \mathbb{E}_{s\sim p}[Q(s,\mu(s))]
+        \]
+        </p>
+
+        <p>
+        We have a way of approximating Q and we have a way of using that approximation to improve our policy, but this setup will end up being very
+        unstable. Why? It has to do with how we defined our Q targets. In small, discrete environments, errors in our Q-function may not have too much
+        of an effect. In complex environments, though, small errors can significantly affect performance. Firstly, notice that the Q-function itself
+        is used in the definition of the target, which introduces bias. Additionally, linear regression assumes that the data points being used have
+        no correlation with each other. Since our data is gathered sequentially, the transitions we save have strong correlation. To make matters
+        even worse, having a deterministic policy means that we have zero exploration. Our policy will only ever try to exploit what the current
+        Q-network says, and we know that our Q-network will be pretty crappy when we start training.
+        </p>
+
+        <p>
+        We'll solve (mostly) the bias problem by using target networks. Instead of using \( Q \) and \( \mu \) in our target definition, we'll use
+        an older \( \bar{Q} \) and \( \bar{\mu} \). We'll create these copies of our networks at the beginning of training. Every time
+        we update \( Q \) and \( \mu \), we'll also update \( \bar{Q} \) and \( \bar{\mu} \), but only very slightly in the direction of the new \( Q \)
+        and \( \mu \). This ensures that our regression targets don't move around too much. We'll use Polyak averaging to do this in practice.
+        </p>
+
+        <p>
+        To address the correlation in our training data, we'll introduce replay buffers. As we observe transtitions in the environment, we'll throw
+        them into a big collection of previous transitions that we've seen. When we perform regression, we'll sample from this collection. In practice,
+        we'll set a limit on how big the replay buffer can get, and then delete the oldest transition once the max capacity has been reached.
+        </p>
+
+        <p>
+        To make our agent explore, we'll simply add some random noise to the actions it gives us during training. With this trick, plus the previous ones,
+        we can form the DDPG algorithm
+        </p>
+
+        <div class="algo">
+        <div>Deep Deterministic Policy Gradient (DDPG)</div>
+        Initialize \(\mu\) with parameters \(\theta\) <br/>
+        Initialize \(Q\) with parameters \(\phi\) <br/>
+        \( \bar{\theta} \gets \theta, \bar{\phi} \gets \phi \) <br/>
+        Initialize replay buffer \(R\) <br/><br/>
+
+        Repeat: <br/>
+            <div>
+            \( a = \mu(s) + \mathcal{N} \) <br/>
+            Observe (\(s', r\)) <br/>
+            Store (\(s,a,r,s'\)) in \(\mathcal{D}\) <br/><br/>
+
+            If it's time to update: <br/>
+                <div>
+                For \(K\) epochs: <br/>
+                    <div>
+                    Sample a batch \(B\) from \(\mathcal{D}\) <br/>
+                    \( y = r + \gamma \bar{Q}(s', \bar{\mu}(s')) \) <br/>
+                    \( L = \frac{1}{|B|}\sum (Q(s, a) - y)^2 \) <br/>
+                    Run backpropagation on \(L\) w.r.t. \(\phi\) <br/><br/>
+
+                    \( P = -\frac{1}{N}\sum Q(s, \mu(s)) \) <br/>
+                    Run backpropagation on \(P\) w.r.t. \(\theta\) <br/><br/>
+
+                    \( \bar{\phi} \gets \tau \bar{\phi} + (1 - \tau)\phi \) <br/>
+                    \( \bar{\theta} \gets \tau\bar{\theta} + (1 - \tau)\theta \)
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <p>
+        DDPG can perform well, but it can be very brittle with respect to its hyperparameters for a number of reasons. All these problems stem from
+        estimation errors in our Q-network, and there are a number of tricks that we can use to mitigate these issues. Our end goal is to make it much
+        harder for our policy to exploit errors in our Q-value estimates and force these estimates to be more precise in the first place.
+        </p>
+
+        <p>
+        A common problem with Q-learning algorithms is the neural network overestimating Q-values. If this becomes severe enough, the policy may
+        think one action is very good when in reality it is only mediocre and another action would be optimal. It's pretty clear why this is bad.
+        A common way of significantly reducing this overestimation is the use of two separate Q-networks. We can initialize two different networks at
+        the beginning of training and use the minimum of the two when determining the Q-value targets.
+        </p>
+
+        <p>
+        Another simple way of making our Q-value estimates better is to update our Q-functions multiple times before updating our policy and target
+        networks. Even just updating our Q-functions twice per iteration instead of once can have positive results on training.
+        </p>
+
+        <p>
+        To help prevent our policy from exploiting errors in our Q-functions (i.e. taking suboptimal actions because the Q-functions are inaccurate),
+        we can add a bit of noise when computing the Q-value targets. Specifically, we'll add some clipped noise to the target actions so that the
+        Q-values change more smoothly w.r.t. action.
+        </p>
+
+        <p>
+        Combining these tricks with DDPG yields Twin Delayed DDPG (TD3)
+        </p>
+
+        <div class="algo">
+        <div>Twin Delayed DDPG (TD3)</div>
+        Initialize \(\mu\) with parameters \(\theta\) <br/>
+        Initialize \(Q_1\) and \(Q_2\) with parameters \(\phi_1\) and \(\phi_2\) <br/>
+        \(\bar{\theta} \gets \theta, \bar{\phi}_1 \gets \phi_1, \bar{\phi}_2 \gets \phi_2\) <br/>
+        Initialize replay buffer \(\mathcal{D}\) <br/><br/>
+
+        Repeat: <br/>
+            <div>
+            \( a = \mu(s) + \mathcal{N} \) <br/>
+            Observe (\(s', r\)) <br/>
+            Store (\(s,a,r,s'\)) in \(\mathcal{D}\) <br/><br/>
+
+            If it's time to update: <br/>
+                <div>
+                For \(K\) epochs: <br/>
+                    <div>
+                    Sample a batch \(B\) from \(\mathcal{D}\) <br/>
+                    \( a' = \bar{\mu}(s') + clip(\mathcal{N}, -c, c) \) <br/>
+                    \( y = r + \gamma \min_{i=1,2}\bar{Q}_i(s', a') \) <br/><br/>
+
+                    \(L_i = \frac{1}{|B|}\sum (Q_i(s, a) - y)^2 \), for \(i \in {1, 2}\)  <br/>
+                    Run backpropagation on \(L_1\) w.r.t. \(\phi_1\) and \(L_2\) w.r.t. \(\phi_2\) <br/><br/>
+
+                    If it's time to update the policy: <br/>
+                        <div>
+                        \( P = -\frac{1}{|B|} \sum Q_1(s, \mu(s))\) <br/>
+                        Run backpropagation on \(P\) w.r.t. \(\theta\) <br/><br/>
+
+                        \( \bar{\phi}_i \gets \tau\bar{\phi}_i + (1 - \tau)\phi_i \), for \(i \in {1, 2}\) <br/>
+                        \( \bar{\theta} \gets \tau\bar{\theta} + (1 - \tau)\theta \)
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <p>
+        TD3 has a lot going on, but it tends to be much more stable than the original DDPG. There are just a few small notes left to go over. Firstly,
+        both DDPG and TD3 train faster if you allow the agent to explore randomly for a bit before training and prepopulate the replay buffer with the
+        transitions it observes. This kickstarts exploration and gives the agent something to start working with when it does its normal exploration.
+        </p>
+
+        <p>
+        Another important note has to do with adding noise to the actions that the agent takes. After adding the random noise, you should clip the
+        resulting action to make sure it's actually a valid action in the environment. I left this second clipping function out of the algorithms
+        to reduce clutter, but it could
+        potentially cause simulators to throw errors if you don't handle it yourself.
+        </p>
+    </div>
+</div>
+
+</body>
+</html>
