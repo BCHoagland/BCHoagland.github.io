@@ -21,18 +21,99 @@
         </i></p>
 
         <p>
-        After seeing the success of DQN on Atari environments, RL researchers quickly looked for ways to expand DQN to more complicated environments.
-        For discrete action spaces, DQN worked well enough. For continuous action spaces, though, DQN has a gaping flaw. Its Q-function targets are
-        defined
+        Q-learning is a very effective method for small environments where we can store Q-values for each state individually. But what if we're working
+        in much more complicated environments? If the state space is large enough, we'd have to fill in so many values in our Q-table that the algorithm
+        loses its practicality. The solution to this for generalized complex environments? We'll get to it. The solution to this for complex environments
+        specifically with discrete action spaces? Deep Q-networks.
+        </p>
+
+        <p>
+        The idea behind the Deep Q-network (DQN) algorithm is to represent the Q-function with a function approximator instead of a table. We'll
+        introduce some error into our Q-values by doing this, but this will speed up our learning. If we're using a neural network as our function
+        approximator, then \(Q([1, 2, 3], 5)\) and \(Q([1, 2, 4], 5)\), for example, will have similar outputs from the get go. This makes sense,
+        since similar states will probably have similar Q-values. If we were using a Q-table, though, we would have had to fill in both Q-values
+        independently of each other. From here on out, I'll refer to the neural network that approximates our Q-function as a Q-network.
+        </p>
+
+        <p>
+        Let's assume we have a way to make our Q-network produce accurate Q-values. If we have this, then we can do exactly what we do in normal
+        Q-learning: pick the action that gives us the largest Q-value. If we're in an environment with 5 possible actions, we can run each action
+        through our neural network along with the current state and see which one gives us the largest value, then take that action.
+        </p>
+
+        <p>
+        This is all well and good, but the question of how to fit this Q-network still remains. We need a solid way of determining
+        Q-value targets for our neural network to produce so that we can run some form of regression and get more accurate Q-value predictions in the
+        future. There are multiple ways to get these targets, but an efficient way is to use the Bellman Equation for \(Q\)
         \[
         \begin{align*}
         Q(s,a) &= \mathbb{E}_{s'}[r(s,a) + \gamma\mathbb{E}_{a'}[Q(s',a')]] \\
-        &= \mathbb{E}_{s'}[r(s,a) + \gamma\max_{a'} Q(s',a')] \\
-        y &= r(s,a) + \gamma\max_{a'} Q(s',a') \\
+        &= \mathbb{E}_{s'}[r(s,a) + \gamma\max_{a'} Q(s',a')]
         \end{align*}
         \]
-        We can get rid of the inner expectation because the "policy" is taking whichever action maximizes the Q function at the current state. We know
-        that the chosen action will be deterministic, so we don't need an expectation. For small, discrete action spaces, checking Q-values for each
+        How did I get to the second expression? Since we'll always pick whichever action maximizes the ouput from our Q-network, we don't need the
+        expectation over \(a'\). Our action choice will be deterministic, and the expectation of a deterministic number is just that number. This
+        expression will be what gets us our targets for our Q-network. We'll define a target as
+        \[
+        y = r(s,a) + \gamma\max_{a'} Q(s',a')
+        \]
+        If we run our agent in an environment and get lots of \((s, a, r, s')\) samples, then we can plug these values into our target definition and
+        gets lots of datapoints with which to run regression on our Q-network. This is the basic idea behind DQN, but this by itself won't be enough
+        to have stable training. Instability in training comes from several issues with how we fit our Q-network.
+        </p>
+
+        <p>
+        Firstly, notice that the Q-function itself
+        is used in the definition of the target, which introduces bias. Additionally, regression assumes that the data points being used have
+        no correlation with each other. Since our data is gathered sequentially, though, the transitions we save will have strong correlation.
+        </p>
+
+        <p>
+        We'll solve (mostly) the bias problem by using target networks. Instead of using \( Q \) in our target definition, we'll use
+        an older \( \bar{Q} \). We'll create this copy of our network at the beginning of training. Every time
+        we update \( Q \), we'll also update \( \bar{Q} \), but only very slightly in the direction of the new \( Q \). This ensures that our regression
+        targets don't move around too much. We'll use Polyak averaging to do this in practice.
+        </p>
+
+        <p>
+        To address the correlation in our training data, we'll introduce replay buffers. As we observe transtitions in the environment, we'll throw
+        them into a big collection of previous transitions that we've seen. When we perform regression, we'll sample from this collection. In practice,
+        we'll set a limit on how big the replay buffer can get, and then delete the oldest transition once the max capacity has been reached. Adding
+        these tricks to the Q-network fitting gives us the DQN algorithm. Just like with normal Q-learning, it uses ε-greedy action selection to ensure
+        that the agent explores the state space
+        </p>
+
+        <div class="algo">
+        <div>Deep Q-Network (DQN) Algorithm</div>
+        Initialize \(Q\) with parameters \(\phi\) <br/>
+        \( \bar{\phi} \gets \phi \) <br/>
+        Initialize replay buffer \(\mathcal{D}\) <br/><br/>
+
+        Repeat: <br/>
+            <div>
+            With probability \(\varepsilon\), choose a random action <br/>
+            Else \( a = \arg\max_a Q(s,a) \) <br/>
+            Observe (\(s', r\)) <br/>
+            Store (\(s,a,r,s'\)) in \(\mathcal{D}\) <br/><br/>
+
+            Sample a batch \(B\) from \(\mathcal{D}\) <br/>
+            \( y = r + \gamma \bar{Q}(s', \max_{a'}(s', a')) \) <br/>
+            \( L = \frac{1}{|B|}\sum (Q(s, a) - y)^2 \) <br/>
+            Run backpropagation on \(L\) w.r.t. \(\phi\) <br/><br/>
+
+            \( \bar{\phi} \gets \tau \bar{\phi} + (1 - \tau)\phi \) <br/>
+            </div>
+        </div>
+
+        <p>
+        The breakthrough paper from DeepMind on DQN in 2015 showed RL researchers that using deep neural networks as Q-function approximators, although
+        theoretically unsound, could actually be tuned to work very well. The RL community realized that there was room for serious improvement, though.
+        For discrete action spaces, DQN worked well enough. For continuous action spaces, though, DQN has a gaping flaw. Its Q-function targets are
+        defined
+        \[
+        y = r(s,a) + \gamma\max_{a'} Q(s',a')
+        \]
+        For small, discrete action spaces, checking Q-values for each
         action isn't hard to do at all. For continuous action spaces, though, we would have to test infinite actions to find the max Q.
         This obviously isn't possible, so we'll need another way.
         </p>
@@ -40,14 +121,14 @@
         <p>
         The idea of the Deep Deterministic Policy Gradient (DDPG) is to learn a Q-function, use this to learn an explicit deterministic policy, and
         then use this policy to tell us what action to use when calculating our Q-function targets. This probably seems cyclical and confusing, but
-        it should become clear as we work through the derivation. To start, we'll examine our definition of the Bellman Equation for \(Q^\pi\)
+        it should become clear as we work through the derivation. To start, we'll examine our definition of the Bellman Equation for \(Q\)
         \[
-        Q^\pi(s,a) = \mathbb{E}_{s'\sim p}[r(s,a) + \gamma\mathbb{E}_{a'\sim\pi}[Q^\pi(s',a')]]
+        Q(s,a) = \mathbb{E}_{s'}[r(s,a) + \gamma\mathbb{E}_{a'}[Q(s',a')]]
         \]
-        This equation is pretty clunky because of the inner expectation over actions, so we'll use a deterministic policy \( \mu \) instead of the
-        stochastic \( \pi \) that we're used to. Just like with the DQN targets, using a deterministic policy means that we don't need an expectation
+        This equation is pretty clunky because of the inner expectation over actions, so we'll use a deterministic policy \( \mu \) to select actions.
+        Just like with the DQN targets, using a deterministic policy means that we don't need an expectation
         \[
-        Q^\mu(s,a) = \mathbb{E}_{s'\sim p}[r(s,a) + \gamma Q^\mu(s', \mu(s'))]
+        Q^\mu(s,a) = \mathbb{E}_{s'}[r(s,a) + \gamma Q^\mu(s', \mu(s'))]
         \]
         This new expression is only variable with respect to the next state of the environment, so we can estimate it by just sampling tons of transitions
         from the environment and plugging them into this expression.
@@ -58,7 +139,7 @@
         policy \(\mu\), which could be represented by a neural network or anything that's deterministic, really. To make our Q-function compatible
         with continuous action spaces, we'll need to parameterize it somehow and use function approximation to get from state-action pairs to values.
         We can do this pretty easily (if we have enough samples from the environment) by fitting a neural network to the Q definition we just made
-        using linear regression. We'll call this network our Q-network, and we'll parameterize it with \( \phi \)
+        using regression. We'll parameterize this Q-network with \( \phi \)
         \[
         \begin{align*}
         y &= r(s,a) + \gamma Q(s', \mu(s')) \\
@@ -82,34 +163,9 @@
 
         <p>
         We have a way of approximating Q and we have a way of using that approximation to improve our policy, but this setup will end up being very
-        unstable. Why? It has to do with how we defined our Q targets. In small, discrete environments, errors in our Q-function may not have too much
-        of an effect. In complex environments, though, small errors can significantly affect performance.
-        </p>
-
-        <p>
-        Firstly, notice that the Q-function itself
-        is used in the definition of the target, which introduces bias. Additionally, linear regression assumes that the data points being used have
-        no correlation with each other. Since our data is gathered sequentially, though, the transitions we save will have strong correlation. To make
-        matters even worse, having a deterministic policy means that we have zero exploration. Our policy will only ever try to exploit what the current
-        Q-network says, and we know that our Q-network will be pretty crappy when we start training.
-        </p>
-
-        <p>
-        We'll solve (mostly) the bias problem by using target networks. Instead of using \( Q \) and \( \mu \) in our target definition, we'll use
-        an older \( \bar{Q} \) and \( \bar{\mu} \). We'll create these copies of our networks at the beginning of training. Every time
-        we update \( Q \) and \( \mu \), we'll also update \( \bar{Q} \) and \( \bar{\mu} \), but only very slightly in the direction of the new \( Q \)
-        and \( \mu \). This ensures that our regression targets don't move around too much. We'll use Polyak averaging to do this in practice.
-        </p>
-
-        <p>
-        To address the correlation in our training data, we'll introduce replay buffers. As we observe transtitions in the environment, we'll throw
-        them into a big collection of previous transitions that we've seen. When we perform regression, we'll sample from this collection. In practice,
-        we'll set a limit on how big the replay buffer can get, and then delete the oldest transition once the max capacity has been reached.
-        </p>
-
-        <p>
-        To make our agent explore, we'll simply add some random noise to the actions our policy gives us during training. With this trick, plus the
-        previous ones, we can form the DDPG algorithm
+        unstable for the same reasons as with DQN. Thus we'll use target networks for \(Q\) and \(\mu\) in our Q-target definition and a replay buffer
+        here, too. Instead of ε-greedy action selection, we'll simply add some random noise to the actions our policy gives us during training. With
+        these tricks, we can form the DDPG algorithm
         </p>
 
         <div class="algo">
@@ -117,7 +173,7 @@
         Initialize \(\mu\) with parameters \(\theta\) <br/>
         Initialize \(Q\) with parameters \(\phi\) <br/>
         \( \bar{\theta} \gets \theta, \bar{\phi} \gets \phi \) <br/>
-        Initialize replay buffer \(R\) <br/><br/>
+        Initialize replay buffer \(\mathcal{D}\) <br/><br/>
 
         Repeat: <br/>
             <div>
