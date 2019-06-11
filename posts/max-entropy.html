@@ -17,7 +17,18 @@
         <div class="header">Maximum Entropy Reinforcement Learning</div>
 
         <p>
-        I'm gonna need some motivation to write this cause I'm exhausted. I wrote out the algorithm, though, so that's something.
+        With all the previous RL algorithms we've covered, we've tried to maximize expected return. All the different algorithms we have do exactly
+        that, and their only defining features are how quickly we can go from a bad policy to a good one and how stable these policy updates are.
+        Maximum entropy RL also maximizes expected return, but it modifies the maximization objective to ensure that whatever policy we end up with
+        has explored sufficiently and is robust. Below are the normal RL objective and the maximum entropy RL objective
+        \[
+        \max_\pi \sum_t \mathbb{E}_{(s_t, a_t) \sim p_\pi} [r(s_t, a_t)] \\
+        \max_\pi \sum_t \mathbb{E}_{(s_t, a_t) \sim p_\pi} [r(s_t, a_t) + \alpha \mathcal{H}(\pi(\cdot |s_t))]
+        \]
+        As you can see, the max entropy RL objective only has one additional term, a scaled measure of the policy's entropy.
+        </p>
+
+        <p>
         </p>
 
         <div class="algo">
