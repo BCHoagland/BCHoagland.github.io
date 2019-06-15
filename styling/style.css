@@ -73,11 +73,11 @@ img {
     /* border-bottom: 2px solid var(--theme); */
 }
 
-a .header:hover {
+/* a .header:hover {
     background: linear-gradient(to left, #0577B1, #005587);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-}
+} */
 
 .line {
     height: 2px;
