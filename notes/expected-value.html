@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+    integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css?family=Libre+Baskerville:400,700|Source+Sans+Pro:300,700" rel="stylesheet">
+    <link rel="stylesheet" href="../styling/style.css">
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+    <title>Expected Value</title>
+</head>
+<body>
+
+<div id="home-link"><a href="/">Home</a></div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="header">Expected Value</div>
+
+        <p>
+        Expected value is, in its most basic sense, a weighted average. If we were to perform a stochastic operation, just one operation wouldn't be enough
+        to give us an accurate sense of what that operation's mean output is. If we performed that operation a million times and then averaged all the
+        outputs together, though, our estimate of the operation's mean output would be pretty accurate.
+        </p>
+
+        <p>
+        Expected value is doing this kind of sampling and averaging, except it uses an infinite number of samples. This allows us to concisely work with
+        stochastic operations. By wrapping an operation with \(\mathbb{E}[\dots]\), we're saying that we want to use the weighted mean of that operation's
+        many possible outputs.
+        </p>
+
+        <p>
+        As an illustrating example, let's define a random variable \(X\) that is 10 with probability 0.4 and 4 with probability 0.6.
+        If we were to take infinite samples and average them together, we would see that \(\mathbb{E}[X] = 6.4\). The variable is never actually
+        6.4, but this is the weighted average of its possible values.
+        </p>
+
+        <p>
+        Since we know that expected value is really just a weighted average, we can easily expand an expression written in the \(\mathbb{E}[\dots]\) format
+        into a format that's easier to manipulate mathematically. For functions with a discrete number of inputs, we can use a sum
+        \[
+        \mathbb{E}[f(x)] = \sum_i f(x_i) p(x_i)
+        \]
+        where \(p(x_i)\) is the probability of a stochastic variable \(x_i\) being passed to the function \(f\). All this is doing is taking every
+        possible output, multiplying it by the probability of its occurrence, and then adding all those products together to get the final weighted
+        average. Notice how this assumes that the function \(f\) is deterministic. If \(f\) had also been stochastic, then we would've needed a second
+        expectation to account for the fact that passing the same value to \(f\) could potentially output different values.
+        </p>
+
+        <p>
+        We'll continue for now with the same deterministic function \(f\), except now it can accept an infinite number of inputs. In this case, we can use
+        an integral instead of a sum
+        \[
+        \mathbb{E}[f(x)] = \int_x f(x) p(x) \, dx
+        \]
+        </p>
+
+        <p>
+        It's also common to explicitly state where our input is coming from. For the above integral, it would be more proper to write
+        \[
+        \mathbb{E}_\color{blue}{{x\sim p}}[f(x)] = \int f(x) p(x) \, dx
+        \]
+        which includes the additional information that \(x\) is being sampled from some distribution \(p\)
+        </p>
+
+        <p>
+        Earlier I stated that we would have needed a second expectation if our function \(f\) had been stochastic. Now I'll illustrate what that would look
+        like with an example from RL. If we're using a stochastic policy \(\pi\) to determine actions to take in a given state, the same input state could
+        produce different output actions. Our policy also creates a state distribution \(p_\pi\), which is the collection of states we're likely to see by
+        following our policy. These two sources of stochasticity mean that there will be uncertainty when using either state or action. So if we had an
+        arbitrary deterministic function \(f(s, a)\) and wanted its expected value, we would write it with expectations over both variables as follows
+        \[
+        \begin{align*}
+        \mathbb{E}_{s\sim p_\pi, a\sim\pi}[f(s, a)] &= \sum_s p_\pi(s) \sum_a \pi(a|s) f(s, a) \;\; \color{blue}{\text{(discrete)}} \\
+        &= \int_s p_\pi(s) \int_a \pi(a|s) f(s,a) \, da \, ds \;\; \color{blue}{\text{(continuous)}}
+        \end{align*}
+        \]
+        </p>
+    </div>
+</div>
+
+</body>
+</html>

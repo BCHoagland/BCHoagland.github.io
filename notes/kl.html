@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+    integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css?family=Libre+Baskerville:400,700|Source+Sans+Pro:300,700" rel="stylesheet">
+    <link rel="stylesheet" href="../styling/style.css">
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+    <title>KL Divergence</title>
+</head>
+<body>
+
+<div id="home-link"><a href="/">Home</a></div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="header">KL Divergence</div>
+
+        <p>
+        KL Divergence is a measure of the difference between two probability distributions. It is based on the definition of entropy
+        \[
+        \begin{align*}
+        \mathcal{H}(P(x)) &= - \sum_i P(x_i) \log P(x_i) \\
+        &= \mathbb{E}_{x\sim P} \big[\log P(x)\big]
+        \end{align*}
+        \]
+        Entropy is a measure of the stochasticity of a single probability distribution, but we can modify it slightly to make it involve the difference
+        of two separate distributions
+        \[
+        \begin{align*}
+        D_{KL}(P \,\Vert\, Q) &= \sum_i P(x_i) \big( \log P(x_i) - \log Q(x_i) \big) \\
+        &= \mathbb{E}_{x\sim P} \bigg[ \log \frac{P(x)}{Q(x)} \bigg]
+        \end{align*}
+        \]
+        Since our definition of KL divergence involves sampling from only the first distribution, it isn't symmetric.
+        </p>
+
+        <p>
+        We can also rewrite our definition to make it more algebraically compatible with ML
+        \[
+        \begin{align*}
+        D_{KL}(P \,\Vert\, Q) &= \mathbb{E}_{x\sim P} \bigg[ \log \frac{P(x)}{Q(x)} \bigg] \\
+        &= \sum_i P(x_i) \big( \log P(x_i) - \log Q(x_i) \big) \\
+        &= \sum_i P(x_i) \log P(x_i) - \sum_i P(x_i) \log Q(x_i) \\
+        &= - \mathcal{H}(P(x)) - \mathbb{E}_{x\sim P}\big[\log Q(x)\big] \\
+        &= \mathbb{E}_{x\sim P} \big[ -\log Q(x) \big] - \mathcal{H}(P(x))
+        \end{align*}
+        \]
+        Now we've defined KL divergence in terms of the cross entropy between \(P\) and \(Q\) and the entropy of \(P\)
+        </p>
+
+        <p>
+        This is helpful in ML because it allows us to calculate a few things in a nicer way. To start, assume we're fitting a distribution \(Q_\theta\)
+        to another distribution \(P\). We can do this by minimizing either of two objectives: \(D_{KL}(P \,\Vert\, Q_\theta)\) and
+        \(D_{KL}(Q_\theta \,\Vert\, P)\)
+        </p>
+
+        <p>
+        The forward KL minimzation can be expressed
+        \[
+        \begin{align*}
+        \arg\min_\theta D_{KL}(P \,\Vert\, Q_\theta) &= \arg\min_\theta \mathbb{E}_{x\sim P} \big[ -\log Q_\theta(x) \big] - \mathcal{H}(P(x)) \\
+        &= \arg\min_\theta \mathbb{E}_{x\sim P} \big[ -\log Q_\theta(x) \big] \\
+        &= \arg\max_\theta \mathbb{E}_{x\sim P} \big[ \log Q_\theta(x) \big]
+        \end{align*}
+        \]
+        This can be qualitatively described as mean-seeking. Where \(P(x)\) is high, \(Q_\theta(x)\) is also high. This will result in \(Q_\theta(x)\)
+        becoming centered around the mean of \(P(x)\)
+        </p>
+
+        <p>
+        The backward KL minimzation can be expressed
+        \[
+        \begin{align*}
+        \arg\min_\theta D_{KL}(Q_\theta \,\Vert\, P) &= \arg\min_\theta \mathbb{E}_{x\sim Q_\theta} \big[ -\log P(x) \big] - \mathcal{H}(Q_\theta(x)) \\
+        &= \arg\max_\theta \mathbb{E}_{x\sim Q_\theta} \big[ \log P(x) \big] + \mathcal{H}(Q_\theta(x))
+        \end{align*}
+        \]
+        This is instead mode-seeking. Where \(Q_\theta(x)\) is high, \(P(x)\) is also high. This will result in \(Q_\theta(x)\) becoming centered around
+        the mode of \(P(x)\). The additional entropy term ensures that \(Q_\theta(x)\) remains wide enough to get good coverage of \(P(x)\)
+        </p>
+
+        <p>
+        The two types of KL divergence minimization apply in different ML settings. In supervised learning, you can sample from your data but not as easily
+        from your model (unless it's generative), so using the forward method makes sense. If we use a probabilistic formulation of RL, we can see that
+        it makes sense to use the backward method.
+        </p>
+
+        <p>
+        We can think of RL as attempting to find the optimal trajectory distribution \(p^*(\tau)\). The probability of a distribution under optimality
+        will be exponential in the sum of rewards it receives, so we can write \( \log p(\tau) = \sum_t r_t \). Since we won't get to this optimal
+        distribution until after our agent has finished training, we can't ever sample from it. Thus the backward method of minimizing KL divergence
+        is the only method that really makes sense. If we follow this method, we can quickly derive the maximum entropy RL objective
+        \[
+        \begin{align*}
+        & \arg\max_\pi \mathbb{E}_{\tau\sim p_\pi} \big[ \log p(\tau) \big] + \mathcal{H}(p_\pi(\tau)) \\
+        &= \arg\max_\pi \mathbb{E}_{\tau\sim p_\pi} \Big[ \sum_t r_t \Big] + \mathbb{E}_{\tau\sim p_\pi} \Big[ -\sum_t \log\pi(a_t|s_t) \Big] \\
+        &= \arg\max_\pi \mathbb{E}_{\tau\sim p_\pi} \Big[ \sum_t \big(r_t - \log\pi(a_t|s_t) \big) \Big]
+        \end{align*}
+        \]
+        This shows that maximum entropy RL is really trying to minimize the backward KL divergence between the current trajectory distribution and the optimal
+        trajectory distribution.
+        </p>
+    </div>
+</div>
+
+</body>
+</html>
