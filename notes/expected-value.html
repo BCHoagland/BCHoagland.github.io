@@ -42,8 +42,8 @@
         \]
         where \(p(x_i)\) is the probability of a stochastic variable \(x_i\) being passed to the function \(f\). All this is doing is taking every
         possible output, multiplying it by the probability of its occurrence, and then adding all those products together to get the final weighted
-        average. Notice how this assumes that the function \(f\) is deterministic. If \(f\) had also been stochastic, then we would've needed a second
-        expectation to account for the fact that passing the same value to \(f\) could potentially output different values.
+        average. Notice how this assumes that the function \(f\) is deterministic. If \(f\) had also been stochastic in addition to \(x\), then we
+        would've needed a second expectation to account for the fact that passing the same value to \(f\) could potentially output different values.
         </p>
 
         <p>
@@ -64,10 +64,11 @@
 
         <p>
         Earlier I stated that we would have needed a second expectation if our function \(f\) had been stochastic. Now I'll illustrate what that would look
-        like with an example from RL. If we're using a stochastic policy \(\pi\) to determine actions to take in a given state, the same input state could
-        produce different output actions. Our policy also creates a state distribution \(p_\pi\), which is the collection of states we're likely to see by
-        following our policy. These two sources of stochasticity mean that there will be uncertainty when using either state or action. So if we had an
-        arbitrary deterministic function \(f(s, a)\) and wanted its expected value, we would write it with expectations over both variables as follows
+        like with an example from RL. If we're using a stochastic policy \(\pi(a|s)\) to determine an action \(a\) to take in a given state \(s\), the same
+        input \(s\) could produce different output \(a\). Our policy also creates a state distribution \(p_\pi\), which is the collection of states we're
+        likely to see by following our policy. These two sources of stochasticity mean that there will be uncertainty when using either state or action. So
+        if we had an arbitrary deterministic function \(f(s, a)\) and wanted its expected value, we would write it with expectations over both variables as
+        follows
         \[
         \begin{align*}
         \mathbb{E}_{s\sim p_\pi, a\sim\pi}[f(s, a)] &= \sum_s p_\pi(s) \sum_a \pi(a|s) f(s, a) \;\; \color{blue}{\text{(discrete)}} \\

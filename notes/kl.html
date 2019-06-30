@@ -93,9 +93,9 @@
         is the only method that really makes sense. If we follow this method, we can quickly derive the maximum entropy RL objective
         \[
         \begin{align*}
-        & \arg\max_\pi \mathbb{E}_{\tau\sim p_\pi} \big[ \log p(\tau) \big] + \mathcal{H}(p_\pi(\tau)) \\
-        &= \arg\max_\pi \mathbb{E}_{\tau\sim p_\pi} \Big[ \sum_t r_t \Big] + \mathbb{E}_{\tau\sim p_\pi} \Big[ -\sum_t \log\pi(a_t|s_t) \Big] \\
-        &= \arg\max_\pi \mathbb{E}_{\tau\sim p_\pi} \Big[ \sum_t \big(r_t - \log\pi(a_t|s_t) \big) \Big]
+        &\arg\max_\pi \mathbb{E}_{\tau\sim p_\pi} \big[ \log p(\tau) \big] + \mathcal{H}(p_\pi(\tau)) \\
+        = \; &\arg\max_\pi \mathbb{E}_{\tau\sim p_\pi} \Big[ \sum_t r_t \Big] + \mathbb{E}_{\tau\sim p_\pi} \Big[ -\sum_t \log\pi(a_t|s_t) \Big] \\
+        = \; &\arg\max_\pi \mathbb{E}_{\tau\sim p_\pi} \Big[ \sum_t \big(r_t - \log\pi(a_t|s_t) \big) \Big]
         \end{align*}
         \]
         This shows that maximum entropy RL is really trying to minimize the backward KL divergence between the current trajectory distribution and the optimal
