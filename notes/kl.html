@@ -6,6 +6,9 @@
     <link href="https://fonts.googleapis.com/css?family=Libre+Baskerville:400,700|Source+Sans+Pro:300,700" rel="stylesheet">
     <link rel="stylesheet" href="../styling/style.css">
     <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+    <script src="https://www.amcharts.com/lib/4/core.js"></script>
+    <script src="https://www.amcharts.com/lib/4/charts.js"></script>
+    <script src="../graphing/viz.js"></script>
     <title>KL Divergence</title>
 </head>
 <body>
@@ -51,7 +54,7 @@
 
         <p>
         This is helpful in ML because it allows us to calculate a few things in a nicer way. To start, assume we're fitting a distribution \(Q_\theta\)
-        to another distribution \(P\). We can do this by minimizing either of two objectives: \(D_{KL}(P \,\Vert\, Q_\theta)\) and
+        to another distribution \(P\). We can do this by minimizing either of two objectives: \(D_{KL}(P \,\Vert\, Q_\theta)\) or
         \(D_{KL}(Q_\theta \,\Vert\, P)\)
         </p>
 
@@ -65,8 +68,12 @@
         \end{align*}
         \]
         This can be qualitatively described as mean-seeking. Where \(P(x)\) is high, \(Q_\theta(x)\) is also high. This will result in \(Q_\theta(x)\)
-        becoming centered around the mean of \(P(x)\)
+        becoming centered around the mean of \(P(x)\). In the below image, the gray distribution is \(P(x)\). \(Q_\theta(x)\) is the red distribution,
+        and we'll assume that \(\theta\) isn't complex enough to fit a bimodal distribution. Our approximation thus seeks out the mean instead since we're
+        minimizing the forward KL divergence and achieves the following reasonable solution
         </p>
+
+        <div id="forward" style="height: 400px;"></div>
 
         <p>
         The backward KL minimzation can be expressed
@@ -77,13 +84,17 @@
         \end{align*}
         \]
         This is instead mode-seeking. Where \(Q_\theta(x)\) is high, \(P(x)\) is also high. This will result in \(Q_\theta(x)\) becoming centered around
-        the mode of \(P(x)\). The additional entropy term ensures that \(Q_\theta(x)\) remains wide enough to get good coverage of \(P(x)\)
+        the mode of \(P(x)\). The additional entropy term ensures that \(Q_\theta(x)\) remains wide enough to get good coverage of \(P(x)\). The below image
+        uses the same \(P(x)\) from the last example, and the blue distribution is the same \(Q_\theta(x)\) but found through minimizing the backward
+        KL divergence instead. It thus seeks out the mode of \(P(x)\)
         </p>
+
+        <div id="backward" style="height: 400px;"></div>
 
         <p>
         The two types of KL divergence minimization apply in different ML settings. In supervised learning, you can sample from your data but not as easily
-        from your model (unless it's generative), so using the forward method makes sense. If we use a probabilistic formulation of RL, we can see that
-        it makes sense to use the backward method.
+        from your model (unless it's generative), so using the forward method makes sense. In RL, on the other hand, if we use a probabilistic formulation
+        then we'll see that it makes more sense to use the backward method instead.
         </p>
 
         <p>
@@ -103,6 +114,20 @@
         </p>
     </div>
 </div>
+
+<script>
+function g1(x) { return gaussian(x, 1, 2) }
+function g2(x) { return gaussian(x, 10, 4) }
+function bimodal(x) { return g1(x) + g2(x) }
+function forward(x) { return gaussian(x, 5, 4, 1.6) }
+function backward(x) { return gaussian(x, 1, 3, 1.6) }
+
+chart = newChart('forward');
+addFunctions(chart, [[bimodal, 'P', '#444', '#777'], [forward, 'Q', '#444', '#f00']], -10, 20);
+
+chart = newChart('backward');
+addFunctions(chart, [[bimodal, 'P', '#444', '#777'], [backward, 'Q', '#444', '#00f']], -10, 20);
+</script>
 
 </body>
 </html>
