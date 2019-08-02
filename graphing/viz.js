@@ -1,14 +1,16 @@
-function newChart(id, lineSelect=false) {
+function newChart(id, lineSelect=false, legend=true) {
     var chart = am4core.create(id, am4charts.XYChart);
     var categoryAxis = chart.xAxes.push(new am4charts.CategoryAxis());
     categoryAxis.dataFields.category = "x0";
     var valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
 
-    chart.legend = new am4charts.Legend();
-    if (!lineSelect) {
-        chart.legend.itemContainers.template.clickable = false;
-        chart.legend.itemContainers.template.focusable = false;
-        chart.legend.itemContainers.template.cursorOverStyle = am4core.MouseCursorStyle.default;
+    if (legend) {
+        chart.legend = new am4charts.Legend();
+        if (!lineSelect) {
+            chart.legend.itemContainers.template.clickable = false;
+            chart.legend.itemContainers.template.focusable = false;
+            chart.legend.itemContainers.template.cursorOverStyle = am4core.MouseCursorStyle.default;
+        }
     }
 
     chart.lines = 0;

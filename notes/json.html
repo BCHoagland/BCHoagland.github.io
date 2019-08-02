@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+    integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css?family=Libre+Baskerville:400,700|Source+Sans+Pro:300,700" rel="stylesheet">
+    <link rel="stylesheet" href="../styling/style.css">
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+    <script src="https://www.amcharts.com/lib/4/core.js"></script>
+    <script src="https://www.amcharts.com/lib/4/charts.js"></script>
+    <!-- <script src="../graphing/viz.js"></script> -->
+    <script src="../data/ant-td3.js"></script>
+    <title>JSON</title>
+</head>
+<body>
+
+<div id="home-link"><a href="/">Home</a></div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div id="json" style="width: 700px; height: 700px;"></div>
+    </div>
+</div>
+
+<script>
+var chart = am4core.create('json', am4charts.XYChart);
+
+chart.data = DATA;
+
+var valueAxisX = chart.xAxes.push(new am4charts.ValueAxis());
+valueAxisX.title.text = 'Weight Dim 0';
+valueAxisX.renderer.minGridDistance = 40;
+
+// Create value axis
+var valueAxisY = chart.yAxes.push(new am4charts.ValueAxis());
+valueAxisY.title.text = 'Weight Dim 1';
+
+// Create series
+for (var i = 0; i < 64; i += 1) {
+    var lineSeries = chart.series.push(new am4charts.LineSeries());
+    lineSeries.dataFields.valueY = "x" + i;
+    lineSeries.dataFields.valueX = "y" + i;
+    lineSeries.strokeWidth = 2;
+    // lineSeries.propertyFields.stroke = "lineColor";
+}
+</script>
+
+</body>
+</html>
