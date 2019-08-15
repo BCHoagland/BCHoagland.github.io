@@ -1,45 +1,21 @@
-:root {
-  --theme: rgba(5, 119, 177, 1);
+body {
+    font-family: 'Times New Roman';
 }
 
-body {
-    color: #000;
-    font-family: 'Source Sans Pro', sans-serif;
-    font-weight: 300;
+.header {
+    font-size: 3em;
+}
+
+.desc {
+    font-size: 1.2em;
+}
+
+.section {
     padding: 4em;
 }
 
-p {
-    margin-top: 1em;
-    font-size: 1.3em;
-}
-
-/* links in blog posts */
-p a {
-    font-weight: bold;
-}
-
-a {
-    color: #000;
-    font-weight: 400;
-    text-decoration: none;
-    transition: color 0.2s;
-}
-
-a:hover {
-    color: var(--theme);
-    text-decoration: none;
-}
-
-a:active {
-    filter: brightness(85%);
-}
-
-#home-link a {
-    font-size: 1.2em;
-    font-weight: bold;
-    position: fixed;
-    right: 8em;
+.row {
+    margin-top: 2em;
 }
 
 .img-container {
@@ -52,69 +28,6 @@ a:active {
 
 .img-container img {
     border-radius: 50%;
-}
-
-img {
-    margin-left: 50%;
-    transform: translateX(-50%);
-}
-
-.section {
-    /* margin-top: 4em; */
-    /* border: 1px solid #333; */
-    padding: 4em;
-}
-
-.section:first-child {
-    margin-top: 0;
-}
-
-.header {
-    font-family: 'Libre Baskerville', serif;
-    font-size: 3em;
-    /* font-weight: bold; */
-    display: inline-block;
-    /* padding-bottom: 0.6em; */
-    /* border-bottom: 2px solid var(--theme); */
-}
-
-/* a .header:hover {
-    background: linear-gradient(to left, #0577B1, #005587);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-} */
-
-.line {
-    height: 2px;
-    background: linear-gradient(to left, #0577B1, #005587);
-    margin-top: 0.4em;
-}
-
-.item {
-    font-size: 1.2em;
-    margin-top: 2em;
-    margin-bottom: 2em;
-}
-
-.name {
-    font-size: 1.1em;
-}
-
-.algo {
-    font-size: 1.2em;
-    border-left: 1px solid black;
-    padding: 1em;
-    margin: 3em;
-}
-
-.algo div {
-    margin-left: 2em;
-}
-
-.algo div:first-child {
-    font-family: 'Libre Baskerville', serif;
-    margin: 0;
-    margin-bottom: 1em;
-    color: var(--theme);
-    font-weight: bold;
+    width: 50%;
+    height: auto;
 }
