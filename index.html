@@ -1,44 +1,65 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
-    integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <!-- <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+    integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous"> -->
     <link rel="stylesheet" href="styling/style.css">
     <title>Braden Hoagland</title>
 </head>
 <body>
 
-<div class="row">
-    <!-- IMAGE -->
-    <div class="col-lg-5 offset-lg-1 col-md-12">
-        <div class="img-container">
-            <img src="img/braden.jpeg"/>
+<!-- ABOUT ME -->
+<div class="container">
+    <div class="header">About Me<div class="line"></div></div>
+
+    <div class="item">
+        <div class="desc">I'm a Mathematics student at Duke University interested primarily in the applications of various branches of
+            probability to the field of machine learning. I work part time as a machine
+            learning engineer at Decipher Technology Studios in Alexandria, VA, and I also contribute to the
+            <a href="https://computable.ai">Computable AI</a> blog on machine intelligence.
         </div>
     </div>
 
-    <!-- ABOUT ME -->
-    <div class="col-lg-5 col-md-12 section">
-        <div class="header">About Me<div class="line"></div></div>
-
-        <div class="item">
-            <div class="desc">I'm a Computer Science and Mathematics student at Duke University,
-                currently researching more efficient uses of latent state embeddings in the reinforcement
-                learning setting. I work part time as a machine
-                learning engineer at Decipher Technology Studios in Alexandria, VA, and I also contribute to the
-                <a href="https://computable.ai">Computable AI</a> blog on machine intelligence
-                <br/><br/>
-            </div>
-        </div>
-
-        <div class="item">
-            <div class="desc">Email: <a href="mailto:bch29@duke.edu">bch29@duke.edu</a></div>
-            <!-- <br/> -->
-            <div class="desc">GitHub: <a href="https://github.com/bchoagland">BCHoagland</a></div>
-            <br/>
-            <div class="desc"><a href="files/hoagland_CV.pdf">Curriculum Vitae</a></div>
-        </div>
+    <div class="item">
+        <div class="desc">Email: <a href="mailto:bch29@duke.edu">bch29@duke.edu</a></div>
+        <div class="desc">GitHub: <a href="https://github.com/bchoagland">BCHoagland</a></div>
     </div>
 </div>
+
+<!-- NOTES -->
+<div class="container">
+    <div class="header">Notes</div>
+
+    <div class="item">
+        <a href="notes/KL-Divergence.html">KL Divergence</a>
+        <div>Dual gradient descent is used to iteratively solve constrained optimization problems by optimizing the
+            Lagrangian of whatever our constrained objective is.</div>
+    </div>
+
+    <div class="item">
+        <a href="notes/Expected-Value.html">Expected Value</a>
+        <div>Expected value is, in its most basic sense, a weighted average.</div>
+    </div>
+
+    <div class="item">
+        <a href="notes/The-Lagrangian.html">The Lagrangian</a>
+        <div>The Lagrangian is used to directly solve constrained optimization problems by re-formulating them as unconstrained
+            optimization problems instead.</div>
+    </div>
+
+    <div class="item">
+        <a href="notes/Series-Expansions.html">Series Expansions</a>
+        <div>If we wish to approximate an arbitrarily complex function but still be able to take accurate gradients, it's
+            important that we can prove that our approximations have the same gradients as the original function.</div>
+    </div>
+
+    <div class="item">
+        <a href="notes/Dual-Gradient-Descent.html">Dual Gradient Descent</a>
+        <div>Dual gradient descent is used to iteratively solve constrained optimization problems by optimizing the
+            Lagrangian of whatever our constrained objective is.</div>
+    </div>
+</div>
+
 
 </body>
 </html>

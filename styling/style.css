@@ -1,33 +1,18 @@
 body {
     font-family: 'Times New Roman';
+    padding: 2em;
+}
+
+.container {
+    margin: 6em;
+    width: 40%;
 }
 
 .header {
-    font-size: 3em;
+    font-weight: bold;
+    font-size: 1.7em;
 }
 
-.desc {
-    font-size: 1.2em;
-}
-
-.section {
-    padding: 4em;
-}
-
-.row {
+.item {
     margin-top: 2em;
-}
-
-.img-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-    height: 100%;
-}
-
-.img-container img {
-    border-radius: 50%;
-    width: 50%;
-    height: auto;
 }
