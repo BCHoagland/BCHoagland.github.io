@@ -187,11 +187,11 @@
         One last simplification can be made if we set \(p=1\). In this case, I'm just gonna state without any kind of proof that if \(\varphi\)
         is a 1-Lipschitz function, then \( \bar{\varphi} = -\varphi \). This gives us the expression found in the Wasserstein GAN paper
         \[
-        W_1^1(\mu, \nu) = W_1(\mu, \nu) = \sup_{\varphi} \int\varphi \;d\mu - \int\varphi \;d\nu
+        W_1^1(\mu, \nu) = W_1(\mu, \nu) = \sup_{\varphi \text{ is 1-Lipschitz}} \int\varphi \;d\mu - \int\varphi \;d\nu
         \]
         which can be expressed more familiarly as
         \[
-        W_1(\mu, \nu) = \sup_{\varphi} \mathbb{E}_{x \sim \mu} \big[ \varphi(x) \big] - \mathbb{E}_{y \sim \nu} \big[ \varphi(y) \big]
+        W_1(\mu, \nu) = \sup_{\varphi \text{ is 1-Lipschitz}} \mathbb{E}_{x \sim \mu} \big[ \varphi(x) \big] - \mathbb{E}_{y \sim \nu} \big[ \varphi(y) \big]
         \]
         </p>
     </div>
