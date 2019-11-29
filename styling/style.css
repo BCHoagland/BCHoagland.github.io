@@ -21,3 +21,17 @@ body {
 .item {
     margin-top: 2em;
 }
+
+/* ALGORITHMS */
+.algo {
+    margin: 2em;
+}
+
+.algo div {
+    margin-left: 2em;
+}
+
+.algo div:first-child {
+    margin: auto;
+    font-weight: bold;
+}
