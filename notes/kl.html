@@ -96,8 +96,9 @@
         </p>
 
         <p>
-        We can think of RL as attempting to find the optimal trajectory distribution \(p^*(\tau)\). The probability of a distribution under optimality
-        will be exponential in the sum of rewards it receives, so we can write \( \log p(\tau) = \sum_t r_t \). Since we won't get to this optimal
+        We can think of RL as attempting to find the optimal trajectory distribution \(p^*(\tau)\). Maximum entropy RL seeks to find a policy that's
+        proportional to \(e^{Q(s,a)}\), and if \(Q\) is accurate, then this is basically \(e^{\sum_t r_t}\). Thus the probability of a trajectory under
+        an optimal policy can be expressed \( \log p(\tau) = \sum_t r_t \). Since we won't get to this optimal
         distribution until after our agent has finished training, we can't ever sample from it. Thus the backward method of minimizing KL divergence
         is the only method that really makes sense. If we follow this method, we can quickly derive the maximum entropy RL objective
         \[

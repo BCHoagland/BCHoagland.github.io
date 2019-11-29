@@ -71,6 +71,10 @@
         \[
         \inf_{P \in \Pi(\mu, \nu)} \int \int c(x, y) \; P(dx, dy)
         \]
+        or equivalently:
+        \[
+        \inf_{P \in \Pi(\mu, \nu)} \mathbb{E}_{(x,y) \sim P} \big[ c(x, y) \big]
+        \]
         So how do we solve this? Good question cause I have no idea. This is pretty messy, after all. Luckily for us, though, Kantorovich also found a nicer
         dual formulation of this expression that's easier to work with. One derivation is as follows:
         </p>
@@ -193,6 +197,44 @@
         \[
         W_1(\mu, \nu) = \sup_{\varphi \text{ is 1-Lipschitz}} \mathbb{E}_{x \sim \mu} \big[ \varphi(x) \big] - \mathbb{E}_{y \sim \nu} \big[ \varphi(y) \big]
         \]
+        </p>
+
+        <div class="subheader">An Application!</div>
+
+        <p>
+        If you're wondering how this helps, you aren't alone. When I was first introduced to optimal transport, I wondered how much this
+        <i>actually</i> helps. After all, our final expressions are still pretty complicated. If I wanted to transform one distribution into
+        another, why not just use something much simpler like expectation maximization?
+        </p>
+
+        <p>
+        The simple answer: this actually works better! Expectation maximization requires knowing exactly how to calculate log probabilities of your
+        model distribution. This is really easy to do if you use a simple model, like a Gaussian, but what if your target distribution is really wack?
+        Energy-based models seem like a great alternative since they're so versatile, but it's real intractable to calculate log probabilities for them.
+        Since our optimal transport objectives don't rely on probability explicitly, though, we could use them to optimize an energy-based model, though.
+        </p>
+
+        <p>
+        I was actually curious to see if other people had had this same idea, so I did some research mid-article-writing and found that OpenAI beat me
+        to the punch. They use a modified Wasserstein GAN objective to create an energy-based model for image generation. If you're interested
+        in the paper, you can find it <a href="https://arxiv.org/pdf/1903.08689.pdf">here</a>.
+        </p>
+
+        <div class="subheader">Quick Tangent about Differentiability</div>
+
+        <p>
+        In the machine learning world, if a function isn't differentiable, it's as good as useless. As it turns out, the Wasserstein distance
+        by itself isn't differentiable. In fact, it's pretty unstable and the answers to two seemingly similar problems could be pretty different.
+        But people use this in machine learning algorithms, so what's going on?
+        </p>
+
+        <p>
+        From a programming perspective, we're only approximating the true Wasserstein distance, and we're doing this with networks defined by
+        simple tensor operations (which we can use auto-differentiation software with). In a more mathematical sense, this approximation can
+        be thought of as finding a modified Wasserstein distance that has an entropy term. If this entropy term is nonzero, the distance expression
+        has a unique solution and it can be expressed as the result of some basic tensor operations because some mathematicians proved it could.
+        This is clearly differentiable, and moreover, it's the basis of the popular Sinkhorn-Knopp algorithm for calculating the Wasserstein
+        distance without using anything related to neural networks.
         </p>
     </div>
 </div>
