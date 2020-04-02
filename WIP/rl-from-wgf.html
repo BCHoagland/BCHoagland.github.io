@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+    integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css?family=Libre+Baskerville:400,700|Source+Sans+Pro:300,700" rel="stylesheet">
+    <link rel="stylesheet" href="../styling/style.css">
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+    <title>RL as Wasserstein Gradient Flow</title>
+</head>
+<body>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="header">Reinforcment Learning as a Wasserstein Gradient Flow Problem</div>
+        <p>
+        <span style="color:red">some intro stuff about how RL doesn't have strong math roots or something idk. Also mention paper. Also introduce
+        the abbreviation WGF</span>
+        </p>
+
+        <div class="subheader">Wasserstein Gradient Flows</div>
+        <p>
+        <span style="color:red">hey hey hey, fill this in</span>
+        </p>
+
+
+        <div class="subheader">Jordan-Kinderlehrer-Otto</div>
+        <p>
+        The Jordan-Kinderlehrer-Otto (JKO) scheme can be used to approximately solve gradient flows like the one above in an iterative manner. The update rule is
+        \[
+        \begin{align*}
+        J(\mu, \mu_k) &= D_{KL}(\mu \Vert p) + \frac{W_2^2(\mu, \mu_k)}{2h} \\
+        \mu_{k+1} &= \arg\min_\mu J(\mu, \mu_k)
+        \end{align*}
+        \]
+        where \(\mu_k\) is our current distribution and \(p\) is the distribution we want to get to. One particularly nice property of the
+        JKO scheme is that the problem it formulates is convex, which allows us to prove that \(\mu_k \to p\) as \(k \to \infty\) and \(h \to 0\). So how do we
+        interpret this update rule?
+        </p>
+
+        <p>
+        Note that a more general version of this update rule is
+        \[
+        \mu_{k+1} = \arg\min_\mu F(\mu) + \frac{W_2^2(\mu, \mu_k)}{2h}
+        \]
+        where \(F\) is some <span style="color:red">energy functional</span> (we recover the JKO scheme when we define \(F(\mu)\) as the KL divergence between
+        \(\mu\) and \(p\)). From this perspective, we could interpret
+        our update rule as minimizing some quantity within a trust region. This is a twist on a pretty common strategy in RL, and it allows us to make
+        a useful analogy that can help our intution. Just like TRPO uses KL trust regions to stabilize policy gradient learning, our update rule uses Wasserstein
+        trust regions to stabilize learning when minimizing KL divergence. Algorithms like Soft Q-Learning and Soft Actor-Critic both learn by minimizing the KL
+        divergence between the current policy and some optimal energy-based policy, so we can already see some pretty strong connections between our framework and
+        theirs.
+        </p>
+
+        <div class="subheader">Implementing JKO in General</div>
+        <p>
+        We have an unconstrained optimization problem, so how do we solve it? We can't just take the derivative of \(J\) w.r.t. \(\mu_k\), set it to 0, and solve.
+        We can't do any gradient-based procedure, either. Why not? It's because we know nothing about the form of \(\mu_k\). While calculating the gradient of the
+        KL divergence term, we'll have to find the log probability of a point produced by \(\mu_k\), which we just don't know. The Wasserstein term is also a mess,
+        as we don't have an easy way of calculating the gradient of the Wasserstein-2 distance between general distributions.
+        </p>
+
+        <p>
+        If we wanted to make assumptions about \(\mu_k\) (say, assume it's a Gaussian), maybe we could make this feasible.
+        But we don't want to restrict ourselves to certain classes of distributions
+        because then we probably won't be able to achieve optimality (how could a Gaussian fit an arbitrary distribution \(p\) well? It couldn't unless we got
+        really lucky and \(p\) was a Gaussian too or at least something that looked like one).
+        </p>
+
+        <p>
+        The above paper gets around this by approximating \(\mu_k\) with a set of particles \(\{x_i\}_{i=1}^M\)
+        \[
+        \mu_k \approx \frac{1}{M} \sum_{i=1}^M \delta(x_i)
+        \]
+        Note that each particle is a vector with size corresponding to the dimensionality of whatever space we're working in. To simulate JKO, we can perform
+        gradient descent with respect to our particles. What would this look like? We need to calculate two different gradients:
+        the gradient of the KL divergence term and the gradient of the Wasserstein term. We can start with the KL divergence term.
+        </p>
+        
+        <p>
+        A well known strategy for particle-based gradient descent to minimize KL divergence is Stein Variational Gradient
+        Descent, which is based on the fact that the direction of steepest descent in a reproducing kernel hilbert space with kernel \(k\) is proportional to
+        \[
+        \phi_{q,p}(\cdot) = \mathbb{E}_{x \sim q} \big[ k(x, \cdot) \nabla_x \log p(x) + \nabla_x k(x, \cdot) \big]
+        \]
+        <span style="color:red">explain better and maybe get rid of the dot notation.</span>
+        Plugging in our particles and approximating the expectation with an average gives the approximate relation
+        \[
+        \frac{\partial D_{KL}(\mu \Vert p)}{\partial x_i} \propto \frac{1}{M} \sum_{j=1}^M \big[ k(x_i, x_j) \nabla_{x_j} \log p(x_j) + \nabla_{x_j} k(x_i, x_j)
+        \big]
+        \]
+        <span style="color:red">when to introduce specific kernel used?</span>
+        </p>
+
+        <p>
+        Note that we never have to find the log probability of the distribution \(\mu\), just \(p\). This means that we can still work with general policy
+        distributions as long as we know how to evaluate log probabilities for our target distribution.
+        Now we have to get a gradient for the Wasserstein term. The paper does this using the method of Lagrange multipliers. The computation is messy, but we get
+        the final relation
+        \[
+        \begin{align*}
+        \frac{\partial W_2^2(\mu, \mu_k)}{\partial x_i} &\propto \frac{\sum_j c_{ij} e^{-c_{ij} / \lambda}}{\partial x_i} \\
+        &= \sum_{j=1}^M 2 \Big( 1 - \frac{c_{ij}}{\lambda} \Big) e^{-c{ij} / \lambda} (x_i - y_j)
+        \end{align*}
+        \]
+        There's a lot of new variables in here. First off, the \(x_i\) are the particles of \(\mu\) and the \(y_i\) are the particles of \(\mu_k\). \(\lambda\)
+        is some regularization parameter that balances how much we care about the KL divergence from earlier and the Wasserstein distance we're working with now.
+        It seems as if the paper authors used it to get rid of the \(2h\) denominator in the Wasserstein term, but take that with a grain of salt. Finally,
+        \(c_{ij} = \Vert x_i, y_j \Vert_2^2 \). This is the cost function used in defining the Wasserstein-2 distance.
+        </p>
+
+        <p>
+        This was kinda ugly, but the sum of these final two expressions is the approximately proportional to the
+        partial derivative of \(J\) with respect to one of our particles. This means we can calculate this for each particle and use it in a gradient descent
+        scheme. As much as I'd like to black box this stuff, we'll have to revisit it once more later on when we see how to use these with RL-specific objects.
+        </p>
+
+        <p>
+        To recap, we started out with the JKO scheme, which we know we can use to get to some target distribution \(p\), and we approximated it using gradient
+        descent. To make this feasible for arbitrary distributions, we decided to approximate our distributions with a set of particles, which led to the forms of
+        the partial derivatives above. Now we can apply all this to a reinforcement learning setting.
+        </p>
+
+        <div class="subheader">Application to RL</div>
+        <p>
+        The paper takes two approaches for applying this to RL: indirect and direct policy learning. The indirect method most closely parallels the
+        policy gradient. The direct method most closely parallels Soft Q-Learning and SAC. The main difference between
+        our new methods and the existing ones is the added Wasserstein trust region.
+        </p>
+
+        <p>
+        <span style="color:red">Indirect policy learning stuff</span>
+        </p>
+
+        <div class="algo">
+            <div><span style="color:red">Indirect Policy Learning with WGF (IP-WGF)</span></div>
+        </div>
+
+        <p>
+        Now we can derive the direct policy learning approach. Since we want to work with arbitrary distributions, we can work with energy-based policies
+        \(\pi(a \vert s) \propto e^{f(s,a)/\alpha}\) for some function \(f\) and entropy weight \(\alpha\). We start by defining a state-dependent energy
+        functional as the KL divergence between our current policy
+        \(\pi\) and the optimal policy \(\pi^*(a \vert s) \propto e^{Q(s,a)}\), where \(Q(s,a)\) is the <i>soft</i> Q-function (the standard Q-function plus
+        an entropy term weighted by \(\alpha\). More explicitly, this is
+        \[
+        \begin{align*}
+        F_s(\pi) &= D_{KL}(\pi \Vert \pi^*) \\
+        &= \mathbb{E}_{a \sim \pi} \big[ Q(s,a) \big] - \mathbb{E}_{a \sim \pi} \big[ \log \pi(a|s) \big]
+        \end{align*}
+        \]
+        We know that the JKO scheme will converge to \(\pi^*\), so we just have to figure out the best way to approximate that scheme. We'll start by assuming
+        nothing about things are implemented, then parameterize things as we (using neural networks) go until we have something that's feasible. The first thing
+        we can address is how to get the particles for \(\pi\). Since the particles need to be state-dependent and since we'll be working in massive state spaces,
+        it makes sense to generate the particles using a neural net that takes states as input. To make sure that the policy is still stochastic, we'll also
+        feed the network some random noise (say, from a Gaussian) alongside the state information. This will allow us to evaluate our network \(M\) times to get
+        the particles \(\{a_i\}_{i=1}^M\) for use in making all the necessary calculations. Let's denote our parameterized network \(\pi_\theta\), where \(\theta\)
+        are the parameters in the neural net.
+        </p>
+
+        <p>
+        With this in place, let's rewrite our earlier JKO approximations to fit with our RL notation. Then we can see what else we still need to parameterize.
+        The biggest fundamental change in our formulas will be that now everything depends on state. Every other change will be either re-labeling a variable or
+        simplifying something. We start with the KL divergence term
+        \[
+        \begin{align*}
+        \frac{\partial D_{KL}(\pi_\theta \Vert \pi^*)}{\partial a_i} &\propto \frac{1}{M} \sum_{j=1}^M \big[ k(a_i, a_j) \nabla_{a_j} \log \pi^*(a_j \vert s) +
+        \nabla_{a_j} k(a_i, a_j) \big] \\
+        &= \frac{1}{M} \sum_{j=1}^M \big[ k(a_i, a_j) \nabla_{a_j} Q(a_j) +
+        \nabla_{a_j} k(a_i, a_j) \big]
+        \end{align*}
+        \]
+        and now for the Wasserstein term
+        \[
+        \begin{align*}
+        \frac{\partial W_2^2 \big(\pi_\theta, \pi_\theta^{(k)} \big)}{\partial a_i} &\propto \sum_{j=1}^M 2 \Big( 1 - \frac{c_{ij}}{\lambda} \Big)
+        e^{-c{ij} / \lambda} \big( a_i - a_j^{(k)} \big)
+        \end{align*}
+        \]
+        where we also redefine \(c_{ij}\) to be \(c_{ij} = \Vert a_i, a_j^{(k)} \Vert_2^2\). I'm not the biggest fan of this \((k)\) notation that I've
+        introduced because it's a bit clunky, but it communicates the right idea at least: \(a_i\) comes from \(\pi_\theta\), and
+        \(a_i^{(k)}\) comes from \(\pi_\theta^{(k)}\). To be very explicit, \(\pi_\theta^{(k)}\) is the previous iteration of our policy, and
+        \(\pi_\theta\) is the policy we currently have.
+        </p>
+
+        <p>
+        To clean up our notation a bit, let's define the gradients
+        \[
+        \begin{align*}
+        \mathcal{K}_s(\theta) &\doteq \Bigg[ \frac{\partial D_{KL}(\pi_\theta \Vert \pi^*)}{\partial a_1},
+        \frac{\partial D_{KL}(\pi_\theta \Vert \pi^*)}{\partial a_2}, \dots,
+        \frac{\partial D_{KL}(\pi_\theta \Vert \pi^*)}{\partial a_M} \Bigg] \\
+
+        \mathcal{W}_s(\theta, \theta_k) &\doteq \Bigg[ \frac{\partial W_2^2 \big(\pi_\theta, \pi_\theta^{(k)} \big)}{\partial a_1},
+        \frac{\partial W_2^2 \big(\pi_\theta, \pi_\theta^{(k)} \big)}{\partial a_2}, \dots,
+        \frac{\partial W_2^2 \big(\pi_\theta, \pi_\theta^{(k)} \big)}{\partial a_M} \Bigg]
+        \end{align*}
+        \]
+        From now on, we can refer these instead of the partial derivatives. Overall our "gradient" for our policy will be of the form
+        \[
+        \nabla_a \mathcal{L}_\pi(\theta, \theta_k) \doteq \mathcal{K}_s(\theta) + \mathcal{W}_s(\theta, \theta_k)
+        \]
+        Since our particles \(\{a_i\}\) are defined in terms of a neural network, though, we have to use the chain rule to get the gradient with respect
+        to our network parameters \(\theta\).
+        \[
+        \begin{align*}
+        \nabla_\theta \mathcal{L}_\pi(\theta, \theta_k) &= \nabla_a \mathcal{L}_\pi(\theta, \theta_k) \cdot \nabla_\theta a \\
+        &= ( \mathcal{K}_s(\theta) + \mathcal{W}_s(\theta, \theta_k) ) \cdot \nabla_\theta a
+        \end{align*}
+        \]
+        </p>
+
+        <p>
+        So what else do we have to do to make this feasible? We have everything we need to calculate \(\mathcal{W}_s(\theta)\), but we don't have a good
+        way of calculating the \(Q(s,a)\) in \(\mathcal{K}_s(\theta)\). The obvious thing to do is parameterize the Q-function with a neural net \(Q_\phi\).
+        Everything else in our formulas is stuff we can calculate with what we currently have, so we're able to update our policy!
+        </p>
+
+        <p>
+        There's one catch, though. Since we now parameterize our Q-function, we'll have to train that alongside the policy. We can train it just like in Soft
+        Q-Learning and SAC. We take the expected soft value function and we try to minimize the mean squared error between samples from that and samples from our
+        Q-network. We can do a bit of work to define the value function in terms of our Q-network, but this results empirically in high variance estimates.
+        The paper proposes using a third neural net, \(V_\psi\), and training it to approximate the soft value function. Our loss functions for these two networks
+        are then
+        \[
+        \begin{align*}
+        \mathcal{L}_Q(\phi) &\doteq \mathbb{E}_{s,a} \Bigg[ \frac{1}{2} \bigg( Q_\theta(s, a) -
+        \Big(r + \mathbb{E}_{s'} \big[ V_\psi(s') \big] \Big) \bigg)^2 \Bigg] \\
+        \mathcal{L}_V(\psi) &\doteq \mathbb{E}_{s} \Bigg[ \frac{1}{2} \bigg( V_\psi(s) - \mathbb{E}_{a} \big[ Q_\phi(s,a) - \log\pi_\theta(a \vert s)
+        \big] \bigg)^2 \Bigg]
+        \end{align*}
+        \]
+        These are just the loss functions from the original SAC paper. The expectations can be calculated approximately by sampling from a replay buffer.
+        The implementation is also improved by using a target network when updating our value network.
+        </p>
+
+        <p>
+        <i>An interesting point is that without the use of the value network, the algorithm performs
+        significantly worse (so much so, in fact, that the paper authors consider the version without the value function to be a different algorithm entirely).
+        In SAC, however, the value function was removed in the second iteration of the algorithm without a decrease in performance.
+        In my opinion, why this difference exists could be an interesting question for future research.</i>
+        </p>
+
+        <p>
+        Finally, we're able to put all this together into an algorithm. The general overview of the algorithm will be 1) update our approximations of the
+        soft Q-function using our Q and value networks, and 2) Use these to update our policy using our update rules for particle policies.
+        
+        <div class="algo">
+            <div>Direct Policy Learning with WGF and Variance Reduction (DP-WGF-V)</div>
+            Initialize parameters \( \theta, \phi, \psi \) <br/>
+            Initialize target parameters \( \tilde{\theta} \gets \theta, \tilde{\psi} \gets \psi \) <br/>
+            Initialize replay buffer \( \mathcal{D} \) <br/><br/>
+
+            Repeat:
+            <div>
+                \( a \sim \pi_\theta(\cdot \vert s) \) <br/>
+                Observe \( (s', r) \) <br/>
+                Store \( (s,a,r,s') \) in \(\mathcal{D}\) <br/><br/>
+
+                Sample batch \( \{s,a,r,s'\} \) from \(\mathcal{D}\) <br/>
+                Update \(\phi\) with ADAM on \(\mathcal{L}_Q(\phi)\) <br/>
+                Update \(\psi\) with ADAM on \(\mathcal{L}_V(\psi)\) <br/><br/>
+
+                Calculate \( \ell \gets \mathcal{L}_\pi(\theta, \tilde{\theta}) \) <br/>
+                \( \tilde{\theta} \gets \theta \) <br/>
+                Update \(\theta\) with ADAM on \( \ell \) <br/><br/>
+
+                \( \tilde{\psi} \gets \tau \tilde{\psi} + (1-\tau)\psi \)
+
+            </div>
+        </div>
+        </p>
+
+        <div class="subheader">Conclusion</div>
+        <p>
+        It took a lot of work to get there, but we ended up with two algorithms that are pretty firmly rooted in theory, in contrast to many other RL algorithms
+        that are based on intuition and not strict mathematical frameworks. We also reinforced the idea that trust regions are a pretty good idea. After all, the
+        DP-WGF-V algorithm (basically SAC with a trust region) has been shown to outperform SAC in a number of environments.
+        </p>
+
+        <p>
+        In terms of where to go from here, I think there are some pretty good options. For starters, using particles for the distribution seems unsatisfying.
+        We could always have our policy assume a certain form, leading to a cleaner, particle-free update rule, but there could be a way to update a general,
+        implicitly-defined policy out there that we haven't thought of yet.
+        </p>
+
+        <p>
+        Another, potentially simpler, way of improving this algorithm would be to find new ways of improving our soft Q-function estimate.
+        In the scenario we set up, we know that JKO
+        will converge to the target Q-function. So if we improve this target, then the algorithm should become more accurate. How this algorithm
+        deals with exploration is also a good area for future research. The paper offers some insights using a multi-goal environment in which the
+        agent seems to explore well, but it could be interesting to see how changes in the Q-function approximation affect exploration.
+        </p>
+    </div>
+</div>
+
+</body>
+</html>

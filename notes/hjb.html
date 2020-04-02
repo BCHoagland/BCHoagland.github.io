@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+    integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css?family=Libre+Baskerville:400,700|Source+Sans+Pro:300,700" rel="stylesheet">
+    <link rel="stylesheet" href="../styling/style.css">
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+    <title>The Hamilton-Jacobi-Bellman Equation</title>
+</head>
+<body>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="header">The Hamilton-Jacobi-Bellman Equation</div>
+
+        <p>
+        While learning about continuous control theory, I was introduced to the Hamilton-Jacobi-Bellman equation, a non-linear partial differential equation
+        that an optimal value function should satisfy. It's basically the continuous analogue of the usual discrete Bellman equation in RL.
+        </p>
+        
+        <p>
+        To derive this equation, we first have to form a recursive definition of the value of our controller (policy), just as with the discrete version. The
+        value in this case is defined slightly differently because 1) we're working in continuous time, and 2) control theory convention has decided that
+        minimizing cost is cooler than maximizing reward. From an RL standpoint, this can be thought of as just minimizing negative reward. Although I was willing to work with cost instead of reward, I couldn't bring myself to use the \(x_t,u_t\) notation for states and actions, as control theory uses. Instead I'm sticking with \(s_t, a_t\) notation from RL. With that covered,
+        we can form our first definition of the value function as
+        \[
+        V_\pi(t, s) = \int_t^T c(t, s_t, a_t) dt + C(T, s_T)
+        \]
+        where each \(a_t\) is determined by our controller \(\pi\), \(c\) is our normal cost function, \(C\) is a terminal cost function for special terminal states, and \( T = \inf_t \{
+        t \geq 0 \;\vert\; s_t \text{ is terminal} \} \) and can be thought of as how long it'll take our controller to reach a terminal state.
+        We can also define the optimal value function as
+        \[
+        V(t,s) = \inf_\pi V_\pi(t,s)
+        \]
+        </p>
+
+        <p>
+        To put this in a recursive form, let's start at time \(t\) and state \(s\) and then take action \(a\) for a small amount of time \(\delta\). If the function \(F\) represents the dynamics of our environment, we can rewrite the definition of our optimal value function as
+        \[
+        V(t,s) = \inf_a \Big\{ c(t,s,a) \delta + V \big( t+\delta, s + F(t,s,a) \delta \big) \Big\}
+        \]
+        To simplify this, note the 1st-order Taylor expansion of the inner value function
+        \[
+        V \big( t+\delta, s + F(t,s,a) \delta \big) = V(t,s) + \frac{\partial V(t,s)}{\partial t} \delta + \nabla_s V(t,s) \cdot F(t,s,a) \delta + \mathcal{O}(\delta^2)
+        \]
+        <i>Quick aside: since fractions are ugly, I'll adopt the physics notation that a variable with a dot above it is the partial derivative of that variable with respect to time.</i>
+        </p>
+
+        <p>
+        We can then substitute this into our previous recursive definition of \(V(t,s)\) to get
+        \[
+        \begin{align}
+        V(t,s) &= \inf_a \Big\{ c(t,s,a) \delta + V \big( t+\delta, s + F(t,s,a) \delta \big) \Big\} \\
+        \color{red}{V(t,s)} &= \inf_a \Big\{ c(t,s,a)\color{blue}{\delta} + \color{red}{V(t,s)} + \dot{V}(t,s) \color{blue}{\delta} + \nabla_s V(t,s) \cdot F(t,s,a) \color{blue}{\delta} + \mathcal{O}(\color{blue}{\delta}^2) \Big\} \\
+        0 &= \color{blue}{\delta} \inf_a \Big\{ c(t,s,a) + \dot{V}(t,s) + \nabla_s V(t,s) \cdot F(t,s,a) + \mathcal{O}(\delta) \Big\} \\
+        0 &= \dot{V}(t,s) + \inf_a \Big\{ c(t,s,a) + \nabla_s V(t,s) \cdot F(t,s,a) + \mathcal{O}(\delta) \Big\}
+        \end{align}
+        \]
+        Note that the red terms cancel out since they don't depend on the infimum. Finally, if we take the limit of both sides as \( \delta \to 0 \), the \(\mathcal{O}(\delta)\) term goes away and we're left with the final equation
+        \[
+        \dot{V}(t,s) + \inf_a \Big\{ c(t,s,a) + \nabla_s V(t,s) \cdot F(t,s,a) \Big\} = 0
+        \]
+        with the clear boundary condition \( V(x,T) = C(x) \).
+        </p>
+    </div>
+</div>
+
+</body>
+</html>
