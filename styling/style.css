@@ -1,37 +1,8 @@
+h1 {
+    font-family: 'Lora', serif;
+}
+
 body {
-    font-family: 'Times New Roman';
+    font-family: 'Source Sans Pro', sans-serif;
     padding: 2em;
-}
-
-.container {
-    margin: 6em;
-    width: 40%;
-}
-
-.header {
-    font-weight: bold;
-    font-size: 1.7em;
-}
-
-.subheader {
-    font-weight: bold;
-    font-size: 1.2em;
-}
-
-.item {
-    margin-top: 2em;
-}
-
-/* ALGORITHMS */
-.algo {
-    margin: 2em;
-}
-
-.algo div {
-    margin-left: 2em;
-}
-
-.algo div:first-child {
-    margin: auto;
-    font-weight: bold;
 }
