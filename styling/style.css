@@ -6,3 +6,7 @@ body {
     font-family: 'Source Sans Pro', sans-serif;
     padding: 2em;
 }
+
+div {
+    margin-bottom: 5em;
+}
