@@ -1,11 +1,6 @@
-h1 {
-    text-transform: uppercase;
-}
-
 body {
     font-family: 'Raleway';
     font-weight: 500;
-    padding: 2em;
 }
 
 a {
@@ -13,61 +8,16 @@ a {
     text-decoration: inherit;
 }
 
+#content {
+    display: block;
+    padding: 3% 5%;
+}
+
 #content div {
-    display: inline-block;
+    /* display: inline-block; */
+    padding: 20px;
 }
 
-/* phones */
-@media only screen and (min-width: 600px) {
-    #content {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        padding: 10%;
-    }
-
-    #intro {
-        margin: 10em 0;
-    }
-}
-
-/* computers */
-@media only screen and (min-width: 992px) {
-    #content {
-        display: block;
-        padding: 0 15%;
-    }
-
-    #content div {
-        padding: 20px;
-    }
-    
-    #intro {
-        float: right;
-        transform: translateX(-50%);
-        /* margin-top: 0; */
-    }
-    
-    #projects {
-        float: left;
-        margin-top: 25em;
-    }
-}
-
-/* background svg's */
-#tl, #br {
-    position: fixed;
-    z-index: -1000;
-}
-
-#tl {
-   top: 0;
-   left: 0;
-   transform: translate(-65%, -50%);
-}
-
-#br {
-    bottom: 0;
-    right: 0;
-    transform: translate(65%, 65%);
+#projects {
+    margin-top: 2em;
 }
